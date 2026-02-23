@@ -1,28 +1,54 @@
+"use client";
 
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Scissors, Calendar, Sparkles } from "lucide-react";
-import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
-export function Hero() {
-  const heroImage = getPlaceholderImage('hero-bg');
+/**
+ * A component that animates a number from 0 to a target value.
+ */
+function NumberTicker({ value, suffix = "", decimals = 0 }: { value: number, suffix?: string, decimals?: number }) {
+  const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    let startTimestamp: number | null = null;
+    const duration = 2000; // 2 seconds animation
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setCount(progress * value);
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
+  }, [value]);
+
+  if (!mounted) return <span>0{suffix}</span>;
 
   return (
+    <span>
+      {count.toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}
+      {suffix}
+    </span>
+  );
+}
+
+export function Hero() {
+  return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-slate-950">
-      {/* Background Image Container */}
+      {/* Background Container - No image as requested */}
       <div className="absolute inset-0 z-0">
-        {heroImage && (
-          <Image 
-            src={heroImage.imageUrl} 
-            alt={heroImage.description} 
-            fill 
-            priority
-            className="object-cover opacity-40 mix-blend-overlay"
-            data-ai-hint={heroImage.imageHint}
-          />
-        )}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-background/20 to-secondary/30" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20">
@@ -45,7 +71,7 @@ export function Hero() {
               <Calendar className="w-6 h-6" />
               Secure Appointment
             </Button>
-            <Button size="lg" variant="outline" className="h-20 px-10 rounded-full text-lg font-bold border-2 border-secondary text-secondary hover:bg-secondary/10 backdrop-blur-md transition-all flex gap-3 uppercase tracking-widest">
+            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold bg-secondary hover:bg-secondary/90 text-white shadow-2xl shadow-secondary/20 transition-all flex gap-3 uppercase tracking-widest border-0">
               <Sparkles className="w-6 h-6" />
               AI Style Tool
             </Button>
@@ -53,12 +79,16 @@ export function Hero() {
 
           <div className="mt-16 flex items-center gap-10 border-l-4 border-primary pl-8">
             <div>
-              <p className="text-3xl font-bold font-headline text-white">5,000+</p>
+              <p className="text-3xl font-bold font-headline text-white">
+                <NumberTicker value={5000} suffix="+" />
+              </p>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Satisfied Clients</p>
             </div>
             <div className="w-px h-12 bg-white/20" />
             <div>
-              <p className="text-3xl font-bold font-headline text-white">4.9/5.0</p>
+              <p className="text-3xl font-bold font-headline text-white">
+                <NumberTicker value={4.9} suffix="/5.0" decimals={1} />
+              </p>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Average Rating</p>
             </div>
           </div>
