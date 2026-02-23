@@ -1,8 +1,11 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Scissors, Calendar, Sparkles } from "lucide-react";
+import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 /**
  * A component that animates a number from 0 to a target value.
@@ -42,10 +45,22 @@ function NumberTicker({ value, suffix = "", decimals = 0 }: { value: number, suf
 }
 
 export function Hero() {
+  const heroImage = getPlaceholderImage('hero-bg');
+
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-slate-950">
-      {/* Background Container - No image as requested */}
+      {/* Background Container */}
       <div className="absolute inset-0 z-0">
+        {heroImage && (
+          <Image
+            src={heroImage.imageUrl}
+            alt={heroImage.description}
+            fill
+            className="object-cover opacity-40 grayscale"
+            priority
+            data-ai-hint={heroImage.imageHint}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-background/20 to-secondary/30" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
