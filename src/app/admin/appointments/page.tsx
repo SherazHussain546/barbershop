@@ -356,17 +356,19 @@ export default function AppointmentsAdmin() {
                             </button>
                           ))}
                         </div>
+                        <div className="mt-6">
+                          <Button 
+                            disabled={!bookingTime || isSubmitting} 
+                            onClick={handleManualBooking}
+                            className="w-full rounded-xl h-14 bg-primary font-bold uppercase tracking-widest text-sm shadow-xl shadow-primary/20"
+                          >
+                            {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm Appointment'}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="pt-6 border-t flex gap-3">
                       <Button variant="outline" onClick={() => setBookingStep(2)} className="rounded-xl h-12 px-8 border-2 font-bold uppercase tracking-widest text-xs"><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
-                      <Button 
-                        disabled={!bookingTime || isSubmitting} 
-                        onClick={handleManualBooking}
-                        className="flex-1 rounded-xl h-12 bg-primary font-bold uppercase tracking-widest text-xs shadow-lg shadow-primary/20"
-                      >
-                        {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm Appointment'}
-                      </Button>
                     </div>
                   </div>
                 )}
