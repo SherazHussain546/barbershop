@@ -1,0 +1,179 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * Gentlecut Guild Security Rules
+     * 
+     * Philosophy:
+     * This ruleset enforces a multi-tier authorization model:
+     * 1. Public Access: Core business data (Services, Categories, Gallery, Barber Profiles) is publicly readable.
+     * 2. User/Barber Ownership: Personal profiles, working hours, and portfolios are restricted to the owner.
+     * 3. Shared Access: Appointments are accessible only by the assigned customer, the assigned barber, or an administrator.
+     * 4. Admin Override: Global administrators have elevated permissions across all collections.
+     * 
+     * Data Structure:
+     * - /users/{userId}: Individual user/customer profiles.
+     * - /barbers/{barberId}: Barber professional profiles with nested subcollections for working hours and portfolios.
+     * - /appointments/{appointmentId}: Shared transaction records using denormalized IDs for authorization.
+     * - /roles_admin/{adminId}: DBAC (Database Access Control) collection to identify system admins.
+     * 
+     * Key Security Decisions:
+     * - Administrators are identified via a high-performance DBAC lookup in the '/roles_admin' collection.
+     * - Relational integrity is enforced by requiring 'id' fields to match path wildcards for user-specific data.
+     * - This ruleset uses a "Prototyping Mode" approach: strict authorization logic but flexible data schema.
+     */
+
+    // --- Global Helper Functions ---
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Stores individual user profiles.
+     * @path /users/{userId}
+     * @allow (get, list, create) if request.auth.uid matches {userId}.
+     * @deny (create) if user attempts to create a profile for a different UID.
+     * @principle Restricts access to a user's own data tree and enforces identity consistency.
+     */
+    match /users/{userId} {
+      allow get, list: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if (isExistingOwner(userId) || (resource != null && isAdmin())) && request.resource.data.id == resource.data.id;
+      allow delete: if (resource != null && isAdmin());
+    }
+
+    /**
+     * @description Publicly readable barber profiles with owner-restricted writes.
+     * @path /barbers/{barberId}
+     * @allow (get, list) for any visitor; (update) if authenticated as the specific barber.
+     * @deny (update) if a user tries to modify another barber's profile.
+     * @principle Public consumption with authenticated owner-only updates.
+     */
+    match /barbers/{barberId} {
+      allow get, list: if true;
+      allow create: if (isOwner(barberId) || isAdmin()) && request.resource.data.id == barberId;
+      allow update: if (isExistingOwner(barberId) || (resource != null && isAdmin())) && request.resource.data.id == resource.data.id;
+      allow delete: if (resource != null && isAdmin());
+
+      /**
+       * @description Individual working hours for a barber.
+       * @path /barbers/{barberId}/workingHours/{workingHoursId}
+       * @allow (get, list) for all; (create, update) if UID matches {barberId}.
+       * @deny (write) if UID does not match parent path barberId.
+       * @principle Path-based authorization for nested owner resources.
+       */
+      match /workingHours/{workingHoursId} {
+        allow get, list: if true;
+        allow create: if isOwner(barberId) || isAdmin();
+        allow update, delete: if (isExistingOwner(barberId) || (resource != null && isAdmin()));
+      }
+
+      /**
+       * @description Barber portfolio images.
+       * @path /barbers/{barberId}/portfolioImages/{imageId}
+       * @allow (get, list) for all; (create) for the specific barber.
+       * @deny (delete) by unauthorized users.
+       * @principle Public display with secured management of creative assets.
+       */
+      match /portfolioImages/{imageId} {
+        allow get, list: if true;
+        allow create: if isOwner(barberId) || isAdmin();
+        allow update, delete: if (isExistingOwner(barberId) || (resource != null && isAdmin()));
+      }
+    }
+
+    /**
+     * @description Shared appointment documents between customers and barbers.
+     * @path /appointments/{appointmentId}
+     * @allow (create) if requester is the customer; (get) if requester is customer or assigned barber.
+     * @deny (list) for users not explicitly mentioned in a document's customerId or barberId.
+     * @principle Multi-party authorization using denormalized identity fields.
+     */
+    match /appointments/{appointmentId} {
+      function isParticipant() {
+        return isSignedIn() && (resource.data.customerId == request.auth.uid || resource.data.barberId == request.auth.uid);
+      }
+
+      allow get, list: if isParticipant() || isAdmin();
+      allow create: if isSignedIn() && (request.resource.data.customerId == request.auth.uid || isAdmin());
+      allow update: if resource != null && (isParticipant() || isAdmin());
+      allow delete: if resource != null && isAdmin();
+    }
+
+    /**
+     * @description System-wide service categories (e.g., Haircuts, Shaves).
+     * @path /serviceCategories/{categoryId}
+     * @allow (get, list) for everyone.
+     * @deny (write) for non-administrators.
+     * @principle Global read-only configuration managed by admins.
+     */
+    match /serviceCategories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Specific barber services offered by the salon.
+     * @path /services/{serviceId}
+     * @allow (get, list) for everyone.
+     * @deny (write) for non-administrators.
+     * @principle Public catalog access with administrative content control.
+     */
+    match /services/{serviceId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description General salon ambiance and portfolio gallery.
+     * @path /galleryImages/{imageId}
+     * @allow (get, list) for everyone.
+     * @deny (write) for non-administrators.
+     * @principle Public marketing assets managed by salon staff.
+     */
+    match /galleryImages/{imageId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description DBAC collection for identifying global administrators.
+     * @path /roles_admin/{adminId}
+     * @allow (get) by administrators.
+     * @deny (all) for standard users.
+     * @principle Secured lookup table for role-based access control.
+     */
+    match /roles_admin/{adminId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Reference role definitions and permissions.
+     * @path /roles/{roleId}
+     * @allow (get, list) for application logic; (write) for admins.
+     * @deny (write) for non-administrators.
+     * @principle Read-only role metadata for UI and logic reference.
+     */
+    match /roles/{roleId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
