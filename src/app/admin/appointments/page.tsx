@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -207,9 +206,9 @@ export default function AppointmentsAdmin() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl p-0 border-none overflow-hidden rounded-[2.5rem]">
-              <div className="bg-slate-950 p-8 text-white flex justify-between items-center">
+              <DialogHeader className="bg-slate-950 p-8 text-white flex flex-row justify-between items-center space-y-0">
                 <div>
-                  <h2 className="text-2xl font-headline font-bold uppercase tracking-tight">Manual Enlisting</h2>
+                  <DialogTitle className="text-2xl font-headline font-bold uppercase tracking-tight text-white">Manual Enlisting</DialogTitle>
                   <p className="text-slate-400 text-xs uppercase tracking-widest mt-1">Step {bookingStep} of 3</p>
                 </div>
                 <div className="flex gap-2">
@@ -217,7 +216,7 @@ export default function AppointmentsAdmin() {
                     <div key={i} className={cn("w-2 h-2 rounded-full", bookingStep >= i ? "bg-primary" : "bg-slate-800")} />
                   ))}
                 </div>
-              </div>
+              </DialogHeader>
 
               <div className="p-8 bg-white min-h-[500px]">
                 {bookingStep === 1 && (
@@ -322,6 +321,7 @@ export default function AppointmentsAdmin() {
                           {availableSlots.map((slot, i) => (
                             <button
                               key={i}
+                              type="button"
                               onClick={() => setBookingTime(slot.toISOString())}
                               className={cn(
                                 "h-11 rounded-lg text-xs font-bold border-2 transition-all",
