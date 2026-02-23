@@ -1,3 +1,4 @@
+
 {
   "placeholderImages": [
     {
@@ -9,7 +10,7 @@
     {
       "id": "barber-1",
       "description": "Master Barber Marcus",
-      "imageUrl": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=400&h=500&auto=format&fit=crop",
+      "imageUrl": "https://images.unsplash.com/photo-1622286332618-f28020ee71cc?q=80&w=400&h=500&auto=format&fit=crop",
       "imageHint": "male barber"
     },
     {
