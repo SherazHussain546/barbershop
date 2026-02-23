@@ -271,11 +271,11 @@ export default function AppointmentsAdmin() {
                       <div className="space-y-4">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Client Information</Label>
                         <div className="grid grid-cols-2 gap-4">
-                          <Input placeholder="First Name" value={clientFirstName} onChange={e => setClientFirstName(e.target.value)} className="h-12 border-2 rounded-xl" />
-                          <Input placeholder="Last Name" value={clientLastName} onChange={e => setClientLastName(e.target.value)} className="h-12 border-2 rounded-xl" />
+                          <Input placeholder="First Name" value={clientFirstName} onChange={e => clientFirstName(e.target.value)} className="h-12 border-2 rounded-xl" />
+                          <Input placeholder="Last Name" value={clientLastName} onChange={e => clientLastName(e.target.value)} className="h-12 border-2 rounded-xl" />
                         </div>
-                        <Input placeholder="Email Address" value={clientEmail} onChange={e => setClientEmail(e.target.value)} className="h-12 border-2 rounded-xl" />
-                        <Input placeholder="Phone Number" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="h-12 border-2 rounded-xl" />
+                        <Input placeholder="Email Address" value={clientEmail} onChange={e => clientEmail(e.target.value)} className="h-12 border-2 rounded-xl" />
+                        <Input placeholder="Phone Number" value={clientPhone} onChange={e => clientPhone(e.target.value)} className="h-12 border-2 rounded-xl" />
                       </div>
                       <div className="space-y-4">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Assigned Artisan</Label>
