@@ -10,10 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin, ArrowLeft } from 'lucide-react';
-import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval, isToday } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
+import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -110,6 +109,15 @@ export default function BookingPage() {
       return !isOccupied;
     });
   }, [date, dayAppointments, totalDuration]);
+
+  const dateOptions = useMemo(() => {
+    const options = [];
+    const today = startOfDay(new Date());
+    for (let i = 0; i < 30; i++) {
+      options.push(addDays(today, i));
+    }
+    return options;
+  }, []);
 
   const handleToggleService = (id: string) => {
     setSelectedServices(prev => 
@@ -253,14 +261,16 @@ export default function BookingPage() {
                       <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Selected Services ({selectedServices.length})</p>
                       <p className="text-4xl font-black text-white">€{totalPrice}</p>
                     </div>
-                    <Button 
-                      disabled={selectedServices.length === 0}
-                      onClick={() => setStep(2)}
-                      className="w-full md:w-auto h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-sm shadow-xl shadow-primary/20 group"
-                    >
-                      Continue to Details
-                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
+                    <div className="flex gap-4 w-full md:w-auto">
+                       <Button 
+                        disabled={selectedServices.length === 0}
+                        onClick={() => setStep(2)}
+                        className="flex-1 md:w-auto h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-sm shadow-xl shadow-primary/20 group"
+                      >
+                        Continue
+                        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </div>
@@ -348,7 +358,7 @@ export default function BookingPage() {
                       onClick={() => setStep(3)}
                       className="flex-1 h-16 rounded-2xl bg-secondary hover:bg-secondary/90 font-bold uppercase tracking-widest shadow-xl shadow-secondary/20"
                     >
-                      Choose Appointment Time
+                      Pick a Time
                     </Button>
                   </div>
                 </CardContent>
@@ -369,38 +379,47 @@ export default function BookingPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 lg:grid-cols-12">
-                    {/* Left Column: Calendar */}
-                    <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white">
-                      <div className="mb-6 flex items-center justify-between">
-                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                    {/* Left Column: Date Selection Dropdown */}
+                    <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white flex flex-col justify-center">
+                      <div className="mb-8">
+                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
                           <CalendarIcon className="w-4 h-4 text-primary" />
-                          Choose a Date
+                          Step 1: Choose a Date
                         </Label>
-                      </div>
-                      <div className="flex justify-center">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={(newDate) => {
-                            setDate(newDate);
+                        <Select 
+                          value={date ? startOfDay(date).toISOString() : undefined} 
+                          onValueChange={(val) => {
+                            const selected = new Date(val);
+                            setDate(selected);
                             setSelectedTime(null);
                           }}
-                          className="w-full p-0"
-                          disabled={(date) => {
-                            const today = startOfDay(new Date());
-                            return isBefore(date, today);
-                          }}
-                        />
+                        >
+                          <SelectTrigger className="h-20 border-2 rounded-3xl text-xl font-bold bg-slate-50 shadow-inner group hover:border-primary transition-all">
+                            <SelectValue placeholder="Pick a date for your grooming" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-2xl shadow-2xl border-2">
+                            {dateOptions.map((d) => (
+                              <SelectItem key={d.toISOString()} value={d.toISOString()} className="h-14 text-lg font-medium rounded-xl">
+                                {format(d, 'EEEE, MMMM do')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-6 text-slate-400">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-primary" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Selected Date</span>
+
+                      <div className="bg-slate-50 p-8 rounded-[2.5rem] border-2 border-dashed border-slate-200">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                            <Scissors className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Preparation</p>
+                            <p className="text-sm font-bold text-slate-900">Arrive 5 minutes before your slot.</p>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-slate-100" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Today</span>
-                        </div>
+                        <p className="text-xs text-slate-400 leading-relaxed italic">
+                          Selecting a date will reveal the Guild's master schedule for that day. Our artisans value your punctuality as much as you value their precision.
+                        </p>
                       </div>
                     </div>
 
@@ -409,7 +428,7 @@ export default function BookingPage() {
                       <div className="mb-8">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-2">
                           <Clock className="w-4 h-4 text-primary" />
-                          Available Slots (10am - 7pm)
+                          Step 2: Available Slots
                         </Label>
                         <p className="text-lg font-headline font-bold text-slate-900">
                           {date ? format(date, 'EEEE, MMMM do') : 'Select a date'}
@@ -439,7 +458,7 @@ export default function BookingPage() {
                               <CalendarIcon className="w-8 h-8 text-slate-300" />
                             </div>
                             <p className="text-slate-400 font-medium px-10">
-                              {date ? "No availability for this date." : "Please select a date on the calendar."}
+                              {date ? "No availability for this date." : "Please select a date from the dropdown."}
                             </p>
                           </div>
                         )}
