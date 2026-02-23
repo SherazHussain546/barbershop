@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -12,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin, ArrowLeft } from 'lucide-react';
 import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval, isToday } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -187,7 +186,7 @@ export default function BookingPage() {
       <Navbar />
       
       <section className="py-20 flex-grow">
-        <div className="max-w-5xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="mb-12 text-center">
             <Badge className="bg-primary mb-4 uppercase tracking-[0.2em] px-6 py-1.5 rounded-full">Secure Your Chair</Badge>
             <h1 className="text-4xl md:text-6xl font-headline font-black text-slate-900 uppercase">Book an <span className="text-primary italic">Experience</span></h1>
@@ -357,114 +356,109 @@ export default function BookingPage() {
 
             {step === 3 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
+                <CardHeader className="bg-slate-900 text-white p-10 relative overflow-hidden flex flex-row items-center justify-between">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <CardTitle className="text-3xl font-headline relative z-10">Select Date & Time</CardTitle>
-                  <CardDescription className="text-slate-400 relative z-10">Find a moment that suits your schedule.</CardDescription>
+                  <div className="relative z-10">
+                    <CardTitle className="text-3xl font-headline">Select Date & Time</CardTitle>
+                    <CardDescription className="text-slate-400">Choose a slot that works for you.</CardDescription>
+                  </div>
+                  <Button variant="ghost" onClick={() => setStep(2)} className="relative z-10 text-white hover:bg-white/10 flex items-center gap-2 font-bold">
+                    <ArrowLeft className="w-4 h-4" /> Change Details
+                  </Button>
                 </CardHeader>
-                <CardContent className="p-10">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
+                <CardContent className="p-0">
+                  <div className="grid grid-cols-1 lg:grid-cols-12">
+                    {/* Left Column: Calendar */}
+                    <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white">
+                      <div className="mb-6 flex items-center justify-between">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
                           <CalendarIcon className="w-4 h-4 text-primary" />
-                          Select Date
+                          Choose a Date
                         </Label>
-                        {date && (
-                          <Badge variant="secondary" className="font-bold">
-                            {format(date, 'MMMM yyyy')}
-                          </Badge>
-                        )}
                       </div>
-                      <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] shadow-inner">
+                      <div className="flex justify-center">
                         <Calendar
                           mode="single"
                           selected={date}
-                          onSelect={setDate}
-                          className="rounded-md mx-auto"
+                          onSelect={(newDate) => {
+                            setDate(newDate);
+                            setSelectedTime(null);
+                          }}
+                          className="w-full max-w-sm"
                           disabled={(date) => {
                             const today = startOfDay(new Date());
                             return isBefore(date, today);
                           }}
                         />
                       </div>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-primary" />
-                          Available Slots
-                        </Label>
-                        {date && (
-                          <Badge className="bg-primary">
-                            {format(date, 'eee, MMM do')}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <div className="relative group">
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-3 custom-scrollbar p-1">
-                          {date && availableSlots.length > 0 ? (
-                            availableSlots.map((slot, i) => (
-                              <Button
-                                key={i}
-                                variant={selectedTime === slot.toISOString() ? 'default' : 'outline'}
-                                onClick={() => setSelectedTime(slot.toISOString())}
-                                className={cn(
-                                  "h-14 rounded-2xl font-bold transition-all text-sm relative group/slot",
-                                  selectedTime === slot.toISOString() 
-                                    ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105 border-primary" 
-                                    : "border-slate-200 hover:border-primary/50 hover:bg-primary/5"
-                                )}
-                              >
-                                {format(slot, 'HH:mm')}
-                                {selectedTime === slot.toISOString() && (
-                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center border border-primary animate-in zoom-in">
-                                    <CheckCircle2 className="w-3 h-3" />
-                                  </div>
-                                )}
-                              </Button>
-                            ))
-                          ) : (
-                            <div className="col-span-full py-20 text-center space-y-4 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
-                              <CalendarIcon className="w-12 h-12 text-slate-200 mx-auto" />
-                              <p className="text-slate-400 italic font-medium px-10">
-                                {date ? "No availability for this date. Please try another day." : "Please select a date on the calendar to see available times."}
-                              </p>
-                            </div>
-                          )}
+                      <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-4 text-slate-400">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Selected</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-slate-100" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Today</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Time Slots */}
+                    <div className="lg:col-span-5 p-10 bg-slate-50/50">
+                      <div className="mb-8">
+                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          Available Times
+                        </Label>
+                        <p className="text-lg font-headline font-bold text-slate-900">
+                          {date ? format(date, 'EEEE, MMMM do') : 'Select a date'}
+                        </p>
+                      </div>
+
+                      <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                        {date && availableSlots.length > 0 ? (
+                          availableSlots.map((slot, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setSelectedTime(slot.toISOString())}
+                              className={cn(
+                                "w-full h-14 rounded-xl font-bold transition-all flex items-center justify-center border-2",
+                                selectedTime === slot.toISOString()
+                                  ? "bg-primary border-primary text-white shadow-xl shadow-primary/20 scale-[1.02]"
+                                  : "bg-white border-slate-100 text-slate-700 hover:border-primary/40 hover:bg-slate-50"
+                              )}
+                            >
+                              {format(slot, 'HH:mm')}
+                              {selectedTime === slot.toISOString() && <Sparkles className="w-4 h-4 ml-2 animate-pulse" />}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                              <CalendarIcon className="w-8 h-8 text-slate-300" />
+                            </div>
+                            <p className="text-slate-400 font-medium px-10">
+                              {date ? "No availability for this date." : "Please select a date on the calendar."}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {selectedTime && (
-                        <div className="p-6 bg-slate-900 text-white rounded-3xl animate-in slide-in-from-bottom-2 duration-300 shadow-xl">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shrink-0">
-                              <Sparkles className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Selected Appointment</p>
-                              <p className="text-lg font-bold">
-                                {format(new Date(selectedTime), 'MMMM do')} @ {format(new Date(selectedTime), 'p')}
-                              </p>
-                            </div>
-                          </div>
+                        <div className="mt-8 animate-in slide-in-from-bottom-4 duration-500">
+                          <Button 
+                            disabled={isSubmitting}
+                            onClick={handleBooking}
+                            className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest shadow-2xl shadow-primary/30 text-lg"
+                          >
+                            {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : 'Confirm Booking'}
+                          </Button>
+                          <p className="text-[10px] text-center mt-3 text-slate-400 font-bold uppercase tracking-[0.2em]">
+                            Instant Confirmation via Email
+                          </p>
                         </div>
                       )}
                     </div>
-                  </div>
-
-                  <div className="mt-12 flex gap-4">
-                    <Button variant="outline" onClick={() => setStep(2)} className="h-16 px-10 rounded-2xl border-2 font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors">Back</Button>
-                    <Button 
-                      disabled={!selectedTime || isSubmitting}
-                      onClick={handleBooking}
-                      className="flex-1 h-16 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest shadow-xl shadow-primary/30 group"
-                    >
-                      {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
-                      Finalize Reservation
-                    </Button>
                   </div>
                 </CardContent>
               </div>
