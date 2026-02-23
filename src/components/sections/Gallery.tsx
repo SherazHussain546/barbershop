@@ -1,13 +1,16 @@
+
+"use client";
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Gallery() {
-  const galleryImages = [
-    { src: getPlaceholderImage('gallery-1')?.imageUrl, span: "row-span-2" },
-    { src: getPlaceholderImage('gallery-2')?.imageUrl, span: "" },
-    { src: getPlaceholderImage('gallery-3')?.imageUrl, span: "" },
-    { src: getPlaceholderImage('service-shave')?.imageUrl, span: "col-span-2" },
+  const galleryItems = [
+    { image: getPlaceholderImage('gallery-1'), span: "row-span-2" },
+    { image: getPlaceholderImage('gallery-2'), span: "" },
+    { image: getPlaceholderImage('gallery-3'), span: "" },
+    { image: getPlaceholderImage('service-shave'), span: "col-span-2" },
   ];
 
   return (
@@ -22,14 +25,21 @@ export function Gallery() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
-          {galleryImages.map((img, i) => (
-            <div key={i} className={`relative overflow-hidden rounded-2xl group ${img.span}`}>
-              <Image 
-                src={img.src || `https://picsum.photos/seed/gallery-${i}/600/800`} 
-                alt="Gallery work" 
-                fill 
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
+          {galleryItems.map((item, i) => (
+            <div key={i} className={`relative overflow-hidden rounded-2xl group ${item.span}`}>
+              {item.image ? (
+                <Image 
+                  src={item.image.imageUrl} 
+                  alt={item.image.description} 
+                  fill 
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  data-ai-hint={item.image.imageHint}
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                   <span className="text-slate-400 text-xs font-bold uppercase">Image Loading...</span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </div>
           ))}

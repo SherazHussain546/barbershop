@@ -16,7 +16,7 @@ export function Barbers() {
       exp: "15 Years",
       specialty: "Classic Straight Razor Shaves",
       rating: "5.0",
-      image: getPlaceholderImage('barber-1')?.imageUrl
+      imageData: getPlaceholderImage('barber-1')
     },
     {
       id: "elena",
@@ -25,7 +25,7 @@ export function Barbers() {
       exp: "8 Years",
       specialty: "Modern Fades & Textures",
       rating: "4.9",
-      image: getPlaceholderImage('barber-2')?.imageUrl
+      imageData: getPlaceholderImage('barber-2')
     },
     {
       id: "james",
@@ -34,7 +34,7 @@ export function Barbers() {
       exp: "4 Years",
       specialty: "Creative Design & Beard Styling",
       rating: "4.8",
-      image: getPlaceholderImage('barber-3')?.imageUrl
+      imageData: getPlaceholderImage('barber-3')
     }
   ];
 
@@ -59,12 +59,19 @@ export function Barbers() {
           {barbers.map((barber) => (
             <div key={barber.id} className="group relative">
               <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-xl">
-                <Image 
-                  src={barber.image || `https://picsum.photos/seed/${barber.id}/400/500`} 
-                  alt={barber.name} 
-                  fill 
-                  className="object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
-                />
+                {barber.imageData ? (
+                  <Image 
+                    src={barber.imageData.imageUrl} 
+                    alt={barber.name} 
+                    fill 
+                    className="object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
+                    data-ai-hint={barber.imageData.imageHint}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-200 flex items-center justify-center">
+                    <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Master Craftsman</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-6 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
