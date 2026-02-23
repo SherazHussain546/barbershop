@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Scissors, LayoutDashboard, Briefcase, Users, Calendar, LogOut, Home, Image as ImageIcon } from 'lucide-react';
+import { Scissors, LayoutDashboard, LogOut, Home, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -44,28 +44,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Dashboard
             </Button>
           </Link>
-          <Link href="/admin/services">
-            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
-              <Briefcase className="w-4 h-4" />
-              Services
-            </Button>
-          </Link>
-          <Link href="/admin/barbers">
-            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
-              <Users className="w-4 h-4" />
-              Artisans
-            </Button>
-          </Link>
           <Link href="/admin/gallery">
             <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
               <ImageIcon className="w-4 h-4" />
               Gallery
-            </Button>
-          </Link>
-          <Link href="/admin/appointments">
-            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
-              <Calendar className="w-4 h-4" />
-              Appointments
             </Button>
           </Link>
         </nav>
