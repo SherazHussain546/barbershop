@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, deleteDoc, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, doc, addDoc, serverTimestamp, query, orderBy, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Image as ImageIcon, Plus, Trash2, Loader2, ExternalLink, Upload, Link as LinkIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function GalleryManagement() {
   const [imageUrl, setImageUrl] = useState('');
@@ -32,7 +34,7 @@ export default function GalleryManagement() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 800000) { // Approx 800KB limit for Firestore docs
+      if (file.size > 800000) {
         toast({
           variant: "destructive",
           title: "File too large",
@@ -49,16 +51,12 @@ export default function GalleryManagement() {
     }
   };
 
-  const handleAddImage = async (e: React.FormEvent) => {
+  const handleAddImage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!firestore || !caption) return;
 
     let finalImageUrl = imageUrl;
-
-    // If we have a file preview, use that (Base64)
-    if (filePreview) {
-      finalImageUrl = filePreview;
-    }
+    if (filePreview) finalImageUrl = filePreview;
 
     if (!finalImageUrl) {
       toast({
@@ -69,50 +67,53 @@ export default function GalleryManagement() {
       return;
     }
 
-    setIsAdding(true);
-    try {
-      await addDoc(collection(firestore, 'galleryImages'), {
-        imageUrl: finalImageUrl,
-        caption,
-        uploadedAt: serverTimestamp(),
-        isFeatured: false,
-        displayOrder: images ? images.length : 0,
-      });
-      
-      // Reset form
-      setImageUrl('');
-      setCaption('');
-      setSelectedFile(null);
-      setFilePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      
-      toast({
-        title: "Success",
-        description: "Image added to the guild gallery.",
-      });
-    } catch (error: any) {
-      console.error("Error adding image:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Could not add image.",
-      });
-    } finally {
-      setIsAdding(false);
-    }
+    const colRef = collection(firestore, 'galleryImages');
+    const imageData = {
+      imageUrl: finalImageUrl,
+      caption,
+      uploadedAt: serverTimestamp(),
+      isFeatured: false,
+      displayOrder: images ? images.length : 0,
+    };
+
+    // Non-blocking mutation with contextual error handling
+    addDoc(colRef, imageData).catch(async (err) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: colRef.path,
+        operation: 'create',
+        requestResourceData: imageData
+      }));
+    });
+    
+    // Reset form optimistically
+    setImageUrl('');
+    setCaption('');
+    setSelectedFile(null);
+    setFilePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    
+    toast({
+      title: "Success",
+      description: "Image addition initiated.",
+    });
   };
 
-  const handleDeleteImage = async (id: string) => {
+  const handleDeleteImage = (id: string) => {
     if (!firestore) return;
-    try {
-      await deleteDoc(doc(firestore, 'galleryImages', id));
-      toast({
-        title: "Deleted",
-        description: "Image removed from the gallery.",
-      });
-    } catch (error) {
-      console.error("Error deleting image:", error);
-    }
+    const docRef = doc(firestore, 'galleryImages', id);
+    
+    // Non-blocking mutation with contextual error handling
+    deleteDoc(docRef).catch(async (err) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete'
+      }));
+    });
+
+    toast({
+      title: "Processing",
+      description: "Removing image from gallery...",
+    });
   };
 
   return (
@@ -125,7 +126,6 @@ export default function GalleryManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Add Image Form */}
         <Card className="lg:col-span-1 border-none shadow-md rounded-2xl overflow-hidden h-fit sticky top-8">
           <CardHeader className="bg-primary text-white">
             <CardTitle className="text-xl font-headline flex items-center gap-2">
@@ -216,7 +216,6 @@ export default function GalleryManagement() {
           </CardContent>
         </Card>
 
-        {/* Image Grid */}
         <Card className="lg:col-span-2 border-none shadow-md rounded-2xl overflow-hidden">
           <CardHeader className="bg-white border-b border-slate-100">
             <CardTitle className="text-xl font-headline font-bold">Public Lookbook</CardTitle>
