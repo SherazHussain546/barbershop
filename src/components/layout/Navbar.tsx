@@ -10,10 +10,10 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: "Services", href: "#services" },
-    { name: "Barbers", href: "#barbers" },
-    { name: "AI Stylist", href: "#ai-stylist" },
-    { name: "Gallery", href: "#gallery" },
+    { name: "Services", href: "/#services" },
+    { name: "Barbers", href: "/#barbers" },
+    { name: "AI Stylist", href: "/#ai-stylist" },
+    { name: "Gallery", href: "/gallery" },
   ];
 
   return (
@@ -40,8 +40,8 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Button className="bg-secondary hover:bg-secondary/90 text-white rounded-full px-6 font-bold uppercase tracking-wider">
-              Book Now
+            <Button className="bg-secondary hover:bg-secondary/90 text-white rounded-full px-6 font-bold uppercase tracking-wider" asChild>
+              <Link href="/book">Book Now</Link>
             </Button>
           </div>
 
@@ -74,8 +74,8 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-4">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-6 text-lg font-bold uppercase tracking-wider">
-                Book Now
+              <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-6 text-lg font-bold uppercase tracking-wider" asChild>
+                <Link href="/book">Book Now</Link>
               </Button>
             </div>
           </div>

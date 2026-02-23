@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Scissors, Calendar, Sparkles } from "lucide-react";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
@@ -82,13 +83,17 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6">
-            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold bg-primary hover:bg-primary/90 transition-all shadow-2xl shadow-primary/40 flex gap-3 uppercase tracking-widest border-0">
-              <Calendar className="w-6 h-6" />
-              Secure Appointment
+            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold bg-primary hover:bg-primary/90 transition-all shadow-2xl shadow-primary/40 flex gap-3 uppercase tracking-widest border-0" asChild>
+              <Link href="/book">
+                <Calendar className="w-6 h-6" />
+                Secure Appointment
+              </Link>
             </Button>
-            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold border-2 border-secondary text-secondary hover:bg-secondary/10 backdrop-blur-md transition-all flex gap-3 uppercase tracking-widest bg-transparent">
-              <Sparkles className="w-6 h-6" />
-              AI Style Tool
+            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold border-2 border-secondary text-secondary hover:bg-secondary/10 backdrop-blur-md transition-all flex gap-3 uppercase tracking-widest bg-transparent" asChild>
+              <Link href="/#ai-stylist">
+                <Sparkles className="w-6 h-6" />
+                AI Style Tool
+              </Link>
             </Button>
           </div>
 

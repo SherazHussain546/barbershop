@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,9 +80,11 @@ export function Services() {
                   </div>
                 </div>
                 <div className="relative z-10 mt-auto">
-                  <Button className="w-full bg-white text-secondary hover:bg-white/90 rounded-lg h-12 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs">
-                    <Calendar className="w-4 h-4" />
-                    Book Now
+                  <Button className="w-full bg-white text-secondary hover:bg-white/90 rounded-lg h-12 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
+                    <Link href="/book">
+                      <Calendar className="w-4 h-4" />
+                      Book Now
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -119,9 +122,11 @@ export function Services() {
                           </div>
                         </div>
                         <div className="mt-8">
-                          <Button className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-lg h-12 flex items-center gap-2 font-bold uppercase tracking-wider text-xs">
-                            <Check className="w-4 h-4" />
-                            Book Now
+                          <Button className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-lg h-12 flex items-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
+                            <Link href="/book">
+                              <Check className="w-4 h-4" />
+                              Book Now
+                            </Link>
                           </Button>
                         </div>
                       </div>
@@ -157,7 +162,9 @@ export function Services() {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full h-14 bg-slate-900 hover:bg-primary text-white font-bold uppercase tracking-widest">Book Now</Button>
+                  <Button className="w-full h-14 bg-slate-900 hover:bg-primary text-white font-bold uppercase tracking-widest" asChild>
+                    <Link href="/book">Book Now</Link>
+                  </Button>
                 </div>
               ))}
             </div>

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -176,8 +177,8 @@ export function AIRecommender() {
                       "{result.recommendationRationale}"
                     </p>
                     <div className="mt-8 pt-8 border-t border-slate-200">
-                      <Button className="w-full bg-secondary hover:bg-secondary/90 h-14 font-bold uppercase tracking-widest">
-                        Book These Styles Now
+                      <Button className="w-full bg-secondary hover:bg-secondary/90 h-14 font-bold uppercase tracking-widest" asChild>
+                        <Link href="/book">Book These Styles Now</Link>
                       </Button>
                     </div>
                   </div>

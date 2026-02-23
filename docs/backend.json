@@ -66,6 +66,27 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "name", "price", "billingCycle", "features", "createdAt"]
+    },
+    "Appointment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Appointment",
+      "type": "object",
+      "description": "Represents a client booking.",
+      "properties": {
+        "id": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "serviceIds": { "type": "array", "items": { "type": "string" } },
+        "barberId": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "totalPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "firstName", "lastName", "email", "phone", "serviceIds", "startTime", "endTime", "totalPrice", "status", "createdAt"]
     }
   },
   "auth": {
@@ -111,6 +132,14 @@
           "entityName": "Barber",
           "schema": { "$ref": "#/backend/entities/Barber" },
           "description": "Stores barber profiles."
+        }
+      },
+      {
+        "path": "/appointments/{appointmentId}",
+        "definition": {
+          "entityName": "Appointment",
+          "schema": { "$ref": "#/backend/entities/Appointment" },
+          "description": "Stores client appointments."
         }
       }
     ]

@@ -36,5 +36,10 @@ service cloud.firestore {
       allow get, list: if true;
       allow write: if isSignedIn();
     }
+
+    match /appointments/{appointmentId} {
+      allow create: if true;
+      allow get, list, update, delete: if isSignedIn();
+    }
   }
 }

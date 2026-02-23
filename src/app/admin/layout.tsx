@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Scissors, LayoutDashboard, LogOut, Home, Image as ImageIcon, Users, Briefcase } from 'lucide-react';
+import { Scissors, LayoutDashboard, LogOut, Home, Image as ImageIcon, Users, Briefcase, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -43,6 +43,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
               <LayoutDashboard className="w-4 h-4" />
               Dashboard
+            </Button>
+          </Link>
+          <Link href="/admin/appointments">
+            <Button variant="ghost" className="w-full justify-start gap-3 hover:bg-slate-800 text-slate-300 hover:text-white">
+              <Calendar className="w-4 h-4" />
+              Appointments
             </Button>
           </Link>
           <Link href="/admin/services">
