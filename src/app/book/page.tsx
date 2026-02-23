@@ -369,7 +369,7 @@ export default function BookingPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 lg:grid-cols-12">
-                    {/* Left Column: Calendar (Google Calendar / Calendly Style) */}
+                    {/* Left Column: Calendar */}
                     <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white">
                       <div className="mb-6 flex items-center justify-between">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
@@ -385,7 +385,7 @@ export default function BookingPage() {
                             setDate(newDate);
                             setSelectedTime(null);
                           }}
-                          className="w-full max-w-md p-0"
+                          className="w-full p-0"
                           disabled={(date) => {
                             const today = startOfDay(new Date());
                             return isBefore(date, today);
