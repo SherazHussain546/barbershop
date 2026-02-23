@@ -23,13 +23,13 @@ import {
   CalendarDays,
   Plus,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  Sparkles
 } from 'lucide-react';
-import { format, startOfDay, endOfDay, addMinutes, setHours, setMinutes, eachMinuteOfInterval, isBefore } from 'date-fns';
+import { format, startOfDay, endOfDay, addMinutes, setHours, setMinutes, eachMinuteOfInterval, isBefore, addDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -64,6 +64,16 @@ export default function AppointmentsAdmin() {
   const [bookingDate, setBookingDate] = useState<Date | undefined>(new Date());
   const [bookingTime, setBookingTime] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Date Selection Options (Next 30 days)
+  const dateOptions = useMemo(() => {
+    const options = [];
+    const today = startOfDay(new Date());
+    for (let i = 0; i < 30; i++) {
+      options.push(addDays(today, i));
+    }
+    return options;
+  }, []);
 
   const appointmentsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -306,14 +316,28 @@ export default function AppointmentsAdmin() {
                 {bookingStep === 3 && (
                   <div className="animate-in fade-in slide-in-from-right-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="bg-slate-50 p-6 rounded-[2rem] border-2 border-dashed">
+                      <div className="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed flex flex-col justify-center">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 block">Select Date</Label>
-                        <Calendar
-                          mode="single"
-                          selected={bookingDate}
-                          onSelect={date => { setBookingDate(date); setBookingTime(null); }}
-                          className="mx-auto"
-                        />
+                        <Select 
+                          value={bookingDate ? startOfDay(bookingDate).toISOString() : undefined} 
+                          onValueChange={(val) => {
+                            const selected = new Date(val);
+                            setBookingDate(selected);
+                            setBookingTime(null);
+                          }}
+                        >
+                          <SelectTrigger className="h-16 border-2 rounded-2xl text-base font-bold bg-white group hover:border-primary transition-all">
+                            <SelectValue placeholder="Pick a date" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl shadow-xl border-2">
+                            {dateOptions.map((d) => (
+                              <SelectItem key={d.toISOString()} value={d.toISOString()} className="h-12 font-medium">
+                                {format(d, 'EEEE, MMMM do')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[10px] text-slate-400 mt-4 italic leading-relaxed">Selecting a date will show available slots for the artisan roster.</p>
                       </div>
                       <div className="space-y-4">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Available Slots (10:00 - 19:00)</Label>
@@ -373,20 +397,39 @@ export default function AppointmentsAdmin() {
                   <CalendarIcon className="w-6 h-6 text-primary" />
                   Select Date
                 </CardTitle>
+                <CardDescription className="text-slate-400">Choose a day to view its specific enlistings.</CardDescription>
               </CardHeader>
-              <CardContent className="p-4 bg-white">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="rounded-md border-0"
-                />
-                <div className="mt-6 p-4 bg-slate-50 rounded-2xl flex items-center justify-between">
+              <CardContent className="p-8 bg-white space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Pick a Day</Label>
+                  <Select 
+                    value={selectedDate ? startOfDay(selectedDate).toISOString() : undefined} 
+                    onValueChange={(val) => setSelectedDate(new Date(val))}
+                  >
+                    <SelectTrigger className="h-16 border-2 rounded-2xl text-lg font-bold bg-slate-50 group hover:border-primary transition-all">
+                      <SelectValue placeholder="Pick a date" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl shadow-xl border-2">
+                      {dateOptions.map((d) => (
+                        <SelectItem key={d.toISOString()} value={d.toISOString()} className="h-12 font-medium">
+                          {format(d, 'EEEE, MMMM do')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="p-6 bg-slate-950 rounded-[2rem] text-white relative overflow-hidden group">
+                  <Sparkles className="absolute -right-2 -top-2 w-16 h-16 text-white/5 rotate-12 group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Viewing Schedule for</p>
-                    <p className="text-lg font-bold text-slate-900">{selectedDate ? format(selectedDate, 'PPPP') : 'Today'}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">Schedule for</p>
+                    <p className="text-xl font-bold font-headline">{selectedDate ? format(selectedDate, 'PPPP') : 'Today'}</p>
                   </div>
-                  <Badge className="bg-primary text-white font-bold">{filteredAppointments?.length || 0} Bookings</Badge>
+                  <div className="mt-4 flex items-center justify-between">
+                    <Badge className="bg-primary text-white font-bold px-4 py-1 rounded-full uppercase tracking-tighter text-[10px]">
+                      {filteredAppointments?.length || 0} Bookings
+                    </Badge>
+                  </div>
                 </div>
               </CardContent>
             </Card>
