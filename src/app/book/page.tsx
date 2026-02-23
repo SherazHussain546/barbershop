@@ -435,25 +435,24 @@ export default function BookingPage() {
                         </p>
                       </div>
 
-                      <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                      <div className="grid grid-cols-3 gap-2 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar p-1">
                         {date && availableSlots.length > 0 ? (
                           availableSlots.map((slot, i) => (
                             <button
                               key={i}
                               onClick={() => setSelectedTime(slot.toISOString())}
                               className={cn(
-                                "w-full h-14 rounded-xl font-bold transition-all flex items-center justify-center border-2",
+                                "h-12 rounded-xl font-bold transition-all flex items-center justify-center border-2 text-sm",
                                 selectedTime === slot.toISOString()
-                                  ? "bg-primary border-primary text-white shadow-xl shadow-primary/20 scale-[1.02]"
+                                  ? "bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-[1.02]"
                                   : "bg-white border-slate-100 text-slate-700 hover:border-primary/40 hover:bg-slate-50"
                               )}
                             >
                               {format(slot, 'HH:mm')}
-                              {selectedTime === slot.toISOString() && <Sparkles className="w-4 h-4 ml-2 animate-pulse" />}
                             </button>
                           ))
                         ) : (
-                          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                          <div className="col-span-3 flex flex-col items-center justify-center py-20 text-center space-y-4">
                             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
                               <CalendarIcon className="w-8 h-8 text-slate-300" />
                             </div>
