@@ -76,16 +76,18 @@ export function Barbers() {
                 
                 <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-6 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
                   <div className="flex items-center gap-4 mb-4">
-                    <Button size="icon" className="rounded-full bg-white/20 backdrop-blur-md hover:bg-primary transition-colors">
-                      <Instagram className="w-4 h-4 text-white" />
+                    <Button size="icon" className="rounded-full bg-white/20 backdrop-blur-md hover:bg-primary transition-colors" asChild>
+                      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                        <Instagram className="w-4 h-4 text-white" />
+                      </a>
                     </Button>
                     <span className="text-white text-sm font-bold flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                       {barber.rating}
                     </span>
                   </div>
-                  <Button className="w-full bg-white text-black hover:bg-primary hover:text-white font-bold uppercase tracking-widest text-xs">
-                    Follow me on Instagram
+                  <Button className="w-full bg-white text-black hover:bg-primary hover:text-white font-bold uppercase tracking-widest text-xs" asChild>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Follow me on Instagram</a>
                   </Button>
                 </div>
               </div>

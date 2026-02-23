@@ -86,7 +86,7 @@ export function Hero() {
               <Calendar className="w-6 h-6" />
               Secure Appointment
             </Button>
-            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold bg-secondary hover:bg-secondary/90 text-white shadow-2xl shadow-secondary/20 transition-all flex gap-3 uppercase tracking-widest border-0">
+            <Button size="lg" className="h-20 px-10 rounded-full text-lg font-bold border-2 border-secondary text-secondary hover:bg-secondary/10 backdrop-blur-md transition-all flex gap-3 uppercase tracking-widest bg-transparent">
               <Sparkles className="w-6 h-6" />
               AI Style Tool
             </Button>
