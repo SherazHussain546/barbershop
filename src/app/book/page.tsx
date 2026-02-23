@@ -93,13 +93,11 @@ export default function BookingPage() {
     const interval = eachMinuteOfInterval({ start, end }, { step: 30 });
     
     return interval.filter(slot => {
-      // hydration safe check
       const now = new Date();
       if (isBefore(slot, now)) return false;
       
       const slotEnd = addMinutes(slot, totalDuration || 30);
       
-      // Basic overlap check
       const isOccupied = dayAppointments?.some(app => {
         const appStart = (app.startTime as any).toDate();
         const appEnd = (app.endTime as any).toDate();
@@ -200,7 +198,6 @@ export default function BookingPage() {
             <Badge className="bg-primary mb-4 uppercase tracking-[0.2em] px-6 py-1.5 rounded-full">Secure Your Chair</Badge>
             <h1 className="text-4xl md:text-6xl font-headline font-black text-slate-900 uppercase">Book an <span className="text-primary italic">Experience</span></h1>
             
-            {/* Steps Progress */}
             <div className="flex items-center justify-center gap-4 mt-8">
               {[1, 2, 3].map(i => (
                 <div key={i} className="flex items-center gap-2">
@@ -379,7 +376,6 @@ export default function BookingPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 lg:grid-cols-12">
-                    {/* Left Column: Date Selection Dropdown */}
                     <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white flex flex-col justify-center">
                       <div className="mb-8">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
@@ -418,12 +414,11 @@ export default function BookingPage() {
                           </div>
                         </div>
                         <p className="text-xs text-slate-400 leading-relaxed italic">
-                          Selecting a date will reveal the Guild's master schedule for that day. Our artisans value your punctuality as much as you value their precision.
+                          Our artisans value your punctuality as much as you value their precision. Instant confirmation will be sent to your email.
                         </p>
                       </div>
                     </div>
 
-                    {/* Right Column: Time Slots */}
                     <div className="lg:col-span-5 p-10 bg-slate-50/50">
                       <div className="mb-8">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-2">
@@ -463,20 +458,18 @@ export default function BookingPage() {
                         )}
                       </div>
 
-                      {selectedTime && (
-                        <div className="mt-8 animate-in slide-in-from-bottom-4 duration-500">
-                          <Button 
-                            disabled={isSubmitting}
-                            onClick={handleBooking}
-                            className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest shadow-2xl shadow-primary/30 text-lg"
-                          >
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : 'Confirm Booking'}
-                          </Button>
-                          <p className="text-[10px] text-center mt-3 text-slate-400 font-bold uppercase tracking-[0.2em]">
-                            Instant Confirmation via Email
-                          </p>
-                        </div>
-                      )}
+                      <div className="mt-8 animate-in slide-in-from-bottom-4 duration-500">
+                        <Button 
+                          disabled={!selectedTime || isSubmitting}
+                          onClick={handleBooking}
+                          className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest shadow-2xl shadow-primary/30 text-lg"
+                        >
+                          {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : 'Confirm Booking'}
+                        </Button>
+                        <p className="text-[10px] text-center mt-3 text-slate-400 font-bold uppercase tracking-[0.2em]">
+                          Instant Confirmation via Email
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
