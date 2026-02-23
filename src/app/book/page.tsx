@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -15,15 +15,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2 } from 'lucide-react';
 import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useSearchParams } from 'next/navigation';
 
 export default function BookingPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const searchParams = useSearchParams();
 
   // Firestore Data
   const servicesQuery = useMemoFirebase(() => {
@@ -51,6 +52,14 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookedAppointment, setBookedAppointment] = useState<any>(null);
+
+  // Deep Link Synchronization
+  useEffect(() => {
+    const initialServiceId = searchParams.get('serviceId');
+    if (initialServiceId && !selectedServices.includes(initialServiceId)) {
+      setSelectedServices(prev => [...prev, initialServiceId]);
+    }
+  }, [searchParams]);
 
   // Derived Values
   const selectedServiceObjects = services?.filter(s => selectedServices.includes(s.id)) || [];

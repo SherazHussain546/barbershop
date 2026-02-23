@@ -81,7 +81,7 @@ export function Services() {
                 </div>
                 <div className="relative z-10 mt-auto">
                   <Button className="w-full bg-white text-secondary hover:bg-white/90 rounded-lg h-12 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
-                    <Link href="/book">
+                    <Link href={`/book?serviceId=${deal.id}`}>
                       <Calendar className="w-4 h-4" />
                       Book Now
                     </Link>
@@ -123,7 +123,7 @@ export function Services() {
                         </div>
                         <div className="mt-8">
                           <Button className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-lg h-12 flex items-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
-                            <Link href="/book">
+                            <Link href={`/book?serviceId=${service.id}`}>
                               <Check className="w-4 h-4" />
                               Book Now
                             </Link>
@@ -163,7 +163,7 @@ export function Services() {
                     ))}
                   </ul>
                   <Button className="w-full h-14 bg-slate-900 hover:bg-primary text-white font-bold uppercase tracking-widest" asChild>
-                    <Link href="/book">Book Now</Link>
+                    <Link href={`/book?serviceId=${sub.id}`}>Book Now</Link>
                   </Button>
                 </div>
               ))}
@@ -174,3 +174,4 @@ export function Services() {
     </section>
   );
 }
+
