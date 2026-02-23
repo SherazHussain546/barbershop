@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Scissors, Instagram, Loader2 } from "lucide-react";
+import { Instagram, Loader2 } from "lucide-react";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
@@ -56,10 +56,6 @@ export function Barbers() {
             <h2 className="text-4xl md:text-5xl font-headline font-black">Meet the <span className="text-primary">Guild Masters</span></h2>
             <p className="mt-4 text-muted-foreground text-lg">Our barbers are more than technicians; they are craftsmen dedicated to the art of grooming.</p>
           </div>
-          <Button variant="outline" className="hidden md:flex gap-2 border-2 hover:bg-primary hover:text-white transition-all">
-            <Scissors className="w-4 h-4" />
-            Join the Team
-          </Button>
         </div>
 
         {isLoading ? (
