@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Scissors, Star, Instagram } from "lucide-react";
-import { PlaceHolderImages } from "@/app/lib/placeholder-images";
+import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Barbers() {
   const barbers = [
@@ -15,7 +15,7 @@ export function Barbers() {
       exp: "15 Years",
       specialty: "Classic Straight Razor Shaves",
       rating: "5.0",
-      image: PlaceHolderImages.find(img => img.id === 'barber-1')?.imageUrl
+      image: getPlaceholderImage('barber-1')?.imageUrl
     },
     {
       id: "elena",
@@ -24,7 +24,7 @@ export function Barbers() {
       exp: "8 Years",
       specialty: "Modern Fades & Textures",
       rating: "4.9",
-      image: PlaceHolderImages.find(img => img.id === 'barber-2')?.imageUrl
+      image: getPlaceholderImage('barber-2')?.imageUrl
     },
     {
       id: "james",
@@ -33,7 +33,7 @@ export function Barbers() {
       exp: "4 Years",
       specialty: "Creative Design & Beard Styling",
       rating: "4.8",
-      image: PlaceHolderImages.find(img => img.id === 'barber-3')?.imageUrl
+      image: getPlaceholderImage('barber-3')?.imageUrl
     }
   ];
 
@@ -59,7 +59,7 @@ export function Barbers() {
             <div key={barber.id} className="group relative">
               <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-xl">
                 <Image 
-                  src={barber.image || "https://placehold.co/400x500?text=Barber"} 
+                  src={barber.image || `https://picsum.photos/seed/${barber.id}/400/500`} 
                   alt={barber.name} 
                   fill 
                   className="object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"

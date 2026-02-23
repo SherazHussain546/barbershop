@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Check } from "lucide-react";
 import Image from "next/image";
-import { PlaceHolderImages } from "@/app/lib/placeholder-images";
+import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Services() {
   const services = [
@@ -19,7 +19,7 @@ export function Services() {
           price: "$45",
           duration: "45 mins",
           featured: true,
-          image: PlaceHolderImages.find(img => img.id === 'service-fade')?.imageUrl
+          image: getPlaceholderImage('service-fade')?.imageUrl
         },
         {
           id: "buzz-cut",
@@ -40,7 +40,7 @@ export function Services() {
           price: "$55",
           duration: "60 mins",
           featured: true,
-          image: PlaceHolderImages.find(img => img.id === 'service-shave')?.imageUrl
+          image: getPlaceholderImage('service-shave')?.imageUrl
         },
         {
           id: "beard-trim",

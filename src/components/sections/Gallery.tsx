@@ -1,14 +1,13 @@
-
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { PlaceHolderImages } from "@/app/lib/placeholder-images";
+import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Gallery() {
   const galleryImages = [
-    { src: PlaceHolderImages.find(img => img.id === 'gallery-1')?.imageUrl, span: "row-span-2" },
-    { src: PlaceHolderImages.find(img => img.id === 'gallery-2')?.imageUrl, span: "" },
-    { src: PlaceHolderImages.find(img => img.id === 'gallery-3')?.imageUrl, span: "" },
-    { src: PlaceHolderImages.find(img => img.id === 'service-shave')?.imageUrl, span: "col-span-2" },
+    { src: getPlaceholderImage('gallery-1')?.imageUrl, span: "row-span-2" },
+    { src: getPlaceholderImage('gallery-2')?.imageUrl, span: "" },
+    { src: getPlaceholderImage('gallery-3')?.imageUrl, span: "" },
+    { src: getPlaceholderImage('service-shave')?.imageUrl, span: "col-span-2" },
   ];
 
   return (
@@ -26,7 +25,7 @@ export function Gallery() {
           {galleryImages.map((img, i) => (
             <div key={i} className={`relative overflow-hidden rounded-2xl group ${img.span}`}>
               <Image 
-                src={img.src || ""} 
+                src={img.src || `https://picsum.photos/seed/gallery-${i}/600/800`} 
                 alt="Gallery work" 
                 fill 
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
