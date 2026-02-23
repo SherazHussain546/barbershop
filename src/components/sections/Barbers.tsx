@@ -4,7 +4,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Scissors, Star, Instagram } from "lucide-react";
+import { Scissors, Instagram } from "lucide-react";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Barbers() {
@@ -15,7 +15,6 @@ export function Barbers() {
       role: "Master Barber",
       exp: "15 Years",
       specialty: "Classic Straight Razor Shaves",
-      rating: "5.0",
       imageData: getPlaceholderImage('barber-1')
     },
     {
@@ -24,7 +23,6 @@ export function Barbers() {
       role: "Senior Stylist",
       exp: "8 Years",
       specialty: "Modern Fades & Textures",
-      rating: "4.9",
       imageData: getPlaceholderImage('barber-2')
     },
     {
@@ -33,7 +31,6 @@ export function Barbers() {
       role: "Junior Barber",
       exp: "4 Years",
       specialty: "Creative Design & Beard Styling",
-      rating: "4.8",
       imageData: getPlaceholderImage('barber-3')
     }
   ];
@@ -81,10 +78,6 @@ export function Barbers() {
                         <Instagram className="w-4 h-4 text-white" />
                       </a>
                     </Button>
-                    <span className="text-white text-sm font-bold flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                      {barber.rating}
-                    </span>
                   </div>
                   <Button className="w-full bg-white text-black hover:bg-primary hover:text-white font-bold uppercase tracking-widest text-xs" asChild>
                     <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Follow me on Instagram</a>
