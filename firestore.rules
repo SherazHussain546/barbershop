@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -6,49 +7,34 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
-      // Basic admin check - in production you might check a dedicated admin collection or claims
-      return isSignedIn();
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
     match /users/{userId} {
-      allow get, list: if isOwner(userId) || isAdmin();
-      allow create, update: if isOwner(userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
     }
 
     match /barbers/{barberId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /appointments/{appointmentId} {
-      allow get, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
-    }
-
-    match /serviceCategories/{categoryId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /services/{serviceId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isSignedIn();
     }
 
     match /galleryImages/{imageId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isSignedIn();
     }
 
-    match /roles_admin/{adminId} {
-      allow get, list, write: if isAdmin();
+    match /services/{serviceId} {
+      allow get, list: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /deals/{dealId} {
+      allow get, list: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /subscriptions/{subscriptionId} {
+      allow get, list: if true;
+      allow write: if isSignedIn();
     }
   }
 }
