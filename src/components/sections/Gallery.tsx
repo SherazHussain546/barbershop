@@ -1,17 +1,37 @@
-
 "use client";
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { collection, query, orderBy, limit } from "firebase/firestore";
+import { Loader2, ImageIcon } from "lucide-react";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Gallery() {
-  const galleryItems = [
-    { image: getPlaceholderImage('gallery-1'), span: "row-span-2" },
-    { image: getPlaceholderImage('gallery-2'), span: "" },
-    { image: getPlaceholderImage('gallery-3'), span: "" },
-    { image: getPlaceholderImage('service-shave'), span: "col-span-2" },
+  const firestore = useFirestore();
+
+  const galleryQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'galleryImages'), orderBy('uploadedAt', 'desc'), limit(5));
+  }, [firestore]);
+
+  const { data: dbImages, isLoading } = useCollection(galleryQuery);
+
+  // Fallback items if database is empty
+  const placeholderItems = [
+    { imageUrl: getPlaceholderImage('gallery-1')?.imageUrl || "", caption: "Sharp lines and style", span: "row-span-2" },
+    { imageUrl: getPlaceholderImage('gallery-2')?.imageUrl || "", caption: "Professional beard grooming", span: "" },
+    { imageUrl: getPlaceholderImage('gallery-3')?.imageUrl || "", caption: "Classic scissor cut", span: "" },
+    { imageUrl: getPlaceholderImage('service-shave')?.imageUrl || "", caption: "Signature Hot Shave", span: "col-span-2" },
   ];
+
+  const displayImages = dbImages && dbImages.length > 0 
+    ? dbImages.map((img, idx) => ({
+        imageUrl: img.imageUrl,
+        caption: img.caption,
+        span: idx === 0 ? "row-span-2" : idx === 3 ? "col-span-2" : ""
+      }))
+    : placeholderItems;
 
   return (
     <section id="gallery" className="py-24 bg-white">
@@ -24,26 +44,27 @@ export function Gallery() {
           <p className="mt-4 text-muted-foreground text-lg">A glimpse into the precision and passion we bring to every chair.</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
-          {galleryItems.map((item, i) => (
-            <div key={i} className={`relative overflow-hidden rounded-2xl group ${item.span}`}>
-              {item.image ? (
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
+            {displayImages.map((item, i) => (
+              <div key={i} className={`relative overflow-hidden rounded-2xl group ${item.span}`}>
                 <Image 
-                  src={item.image.imageUrl} 
-                  alt={item.image.description} 
+                  src={item.imageUrl} 
+                  alt={item.caption} 
                   fill 
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  data-ai-hint={item.image.imageHint}
                 />
-              ) : (
-                <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                   <span className="text-slate-400 text-xs font-bold uppercase">Image Loading...</span>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                  <p className="text-white font-bold text-sm tracking-widest uppercase">{item.caption}</p>
                 </div>
-              )}
-              <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
