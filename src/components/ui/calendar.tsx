@@ -22,28 +22,28 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
         month: "space-y-6 w-full",
-        caption: "flex justify-center pt-2 relative items-center mb-4",
-        caption_label: "text-lg font-headline font-bold text-slate-900",
-        nav: "flex items-center justify-between absolute left-0 right-0 top-2 px-2",
+        caption: "flex justify-center pt-2 relative items-center mb-6",
+        caption_label: "text-xl font-headline font-bold text-slate-900 px-10",
+        nav: "flex items-center justify-between absolute left-0 right-0 top-2 px-0",
         nav_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-10 w-10 p-0 opacity-50 hover:opacity-100 transition-all rounded-full hover:bg-slate-100"
+          "h-10 w-10 p-0 opacity-100 hover:opacity-100 transition-all rounded-full hover:bg-slate-100 border border-slate-100"
         ),
         nav_button_previous: "left-0",
         nav_button_next: "right-0",
         table: "w-full border-collapse space-y-2",
-        head_row: "flex w-full mb-2",
-        head_cell: "text-slate-400 w-full font-bold text-[0.75rem] uppercase tracking-widest text-center",
+        head_row: "flex w-full mb-4",
+        head_cell: "text-slate-400 w-full font-bold text-[0.7rem] uppercase tracking-[0.2em] text-center",
         row: "flex w-full mt-2 justify-between",
-        cell: "h-11 w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-transparent [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        cell: "h-12 w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-transparent [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-11 w-11 p-0 font-bold aria-selected:opacity-100 rounded-full transition-all hover:bg-primary/10 hover:text-primary mx-auto"
+          "h-12 w-12 p-0 font-bold aria-selected:opacity-100 rounded-full transition-all hover:bg-primary/10 hover:text-primary mx-auto"
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white shadow-lg shadow-primary/30 scale-110",
-        day_today: "bg-slate-100 text-slate-900",
+          "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white shadow-lg shadow-primary/30 scale-105",
+        day_today: "bg-slate-50 text-slate-900 border border-slate-200",
         day_outside:
           "day-outside text-slate-300 opacity-50 aria-selected:bg-slate-500/50 aria-selected:text-white aria-selected:opacity-30",
         day_disabled: "text-slate-200 opacity-30 cursor-not-allowed",

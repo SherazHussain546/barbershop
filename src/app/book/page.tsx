@@ -87,8 +87,9 @@ export default function BookingPage() {
   const availableSlots = useMemo(() => {
     if (!date) return [];
     const slots = [];
-    const start = setHours(setMinutes(date, 0), 9); // 9 AM
-    const end = setHours(setMinutes(date, 0), 19); // 7 PM
+    // Shop hours: 10:00 AM to 7:00 PM
+    const start = setHours(setMinutes(date, 0), 10); 
+    const end = setHours(setMinutes(date, 0), 19); 
     
     const interval = eachMinuteOfInterval({ start, end }, { step: 30 });
     
@@ -368,7 +369,7 @@ export default function BookingPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 lg:grid-cols-12">
-                    {/* Left Column: Calendar */}
+                    {/* Left Column: Calendar (Google Calendar / Calendly Style) */}
                     <div className="lg:col-span-7 p-10 border-r border-slate-100 bg-white">
                       <div className="mb-6 flex items-center justify-between">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
@@ -384,17 +385,17 @@ export default function BookingPage() {
                             setDate(newDate);
                             setSelectedTime(null);
                           }}
-                          className="w-full max-w-sm"
+                          className="w-full max-w-md p-0"
                           disabled={(date) => {
                             const today = startOfDay(new Date());
                             return isBefore(date, today);
                           }}
                         />
                       </div>
-                      <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-4 text-slate-400">
+                      <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-6 text-slate-400">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full bg-primary" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Selected</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Selected Date</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full bg-slate-100" />
@@ -408,7 +409,7 @@ export default function BookingPage() {
                       <div className="mb-8">
                         <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-2">
                           <Clock className="w-4 h-4 text-primary" />
-                          Available Times
+                          Available Slots (10am - 7pm)
                         </Label>
                         <p className="text-lg font-headline font-bold text-slate-900">
                           {date ? format(date, 'EEEE, MMMM do') : 'Select a date'}
