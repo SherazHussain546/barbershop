@@ -1,0 +1,58 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Sophisticated barbershop interior",
+      "imageUrl": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&h=800&auto=format&fit=crop",
+      "imageHint": "barber shop interior"
+    },
+    {
+      "id": "barber-1",
+      "description": "Master Barber Marcus",
+      "imageUrl": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=400&h=500&auto=format&fit=crop",
+      "imageHint": "male barber"
+    },
+    {
+      "id": "barber-2",
+      "description": "Senior Stylist Elena",
+      "imageUrl": "https://images.unsplash.com/photo-1593702295094-ada74bc4a149?q=80&w=400&h=500&auto=format&fit=crop",
+      "imageHint": "female barber"
+    },
+    {
+      "id": "barber-3",
+      "description": "Junior Barber James",
+      "imageUrl": "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=400&h=500&auto=format&fit=crop",
+      "imageHint": "young barber"
+    },
+    {
+      "id": "service-fade",
+      "description": "Classic Fade Haircut",
+      "imageUrl": "https://images.unsplash.com/photo-1621605815841-db897c4733dd?q=80&w=600&h=400&auto=format&fit=crop",
+      "imageHint": "fade haircut"
+    },
+    {
+      "id": "service-shave",
+      "description": "Hot Towel Shave",
+      "imageUrl": "https://images.unsplash.com/photo-1512690196252-7c70e78c3d6f?q=80&w=600&h=400&auto=format&fit=crop",
+      "imageHint": "barber shaving"
+    },
+    {
+      "id": "gallery-1",
+      "description": "Sharp lines and style",
+      "imageUrl": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=600&h=800&auto=format&fit=crop",
+      "imageHint": "mens haircut"
+    },
+    {
+      "id": "gallery-2",
+      "description": "Professional beard grooming",
+      "imageUrl": "https://images.unsplash.com/photo-1590540179852-211d6b45e630?q=80&w=600&h=800&auto=format&fit=crop",
+      "imageHint": "beard grooming"
+    },
+    {
+      "id": "gallery-3",
+      "description": "Classic scissor cut",
+      "imageUrl": "https://images.unsplash.com/photo-1599351431247-f10b21ce530d?q=80&w=600&h=800&auto=format&fit=crop",
+      "imageHint": "barber scissors"
+    }
+  ]
+}
