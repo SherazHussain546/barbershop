@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -77,7 +78,7 @@ export function Barbers() {
                     </span>
                   </div>
                   <Button className="w-full bg-white text-black hover:bg-primary hover:text-white font-bold uppercase tracking-widest text-xs">
-                    View Portfolio
+                    Follow me on Instagram
                   </Button>
                 </div>
               </div>
