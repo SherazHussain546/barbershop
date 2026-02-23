@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-t-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
@@ -31,14 +31,14 @@ function Calendar({
         ),
         nav_button_previous: "left-0",
         nav_button_next: "right-0",
-        table: "w-full border-collapse space-y-2",
+        table: "w-full border-collapse",
         head_row: "flex w-full mb-4",
-        head_cell: "text-slate-400 w-full font-bold text-[0.7rem] uppercase tracking-[0.2em] text-center",
-        row: "flex w-full mt-2 justify-between",
-        cell: "h-12 w-full text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-transparent [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        head_cell: "text-slate-400 flex-1 font-bold text-[0.7rem] uppercase tracking-[0.2em] text-center",
+        row: "flex w-full mt-2",
+        cell: "h-12 flex-1 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-transparent [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-12 w-12 p-0 font-bold aria-selected:opacity-100 rounded-full transition-all hover:bg-primary/10 hover:text-primary mx-auto"
+          "h-10 w-10 p-0 font-bold aria-selected:opacity-100 rounded-full transition-all hover:bg-primary/10 hover:text-primary mx-auto flex items-center justify-center"
         ),
         day_range_end: "day-range-end",
         day_selected:
