@@ -38,8 +38,12 @@ service cloud.firestore {
     }
 
     match /appointments/{appointmentId} {
-      allow create: if true;
-      allow get, list, update, delete: if isSignedIn();
+      // Allow everyone to create and list. 
+      // Listing is required for the booking page to calculate available time slots.
+      allow create, list: if true;
+      
+      // Allow only signed-in administrators to manage or view details of specific appointments.
+      allow get, update, delete: if isSignedIn();
     }
   }
 }
