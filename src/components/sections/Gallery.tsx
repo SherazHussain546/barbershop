@@ -1,10 +1,13 @@
+
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy, limit } from "firebase/firestore";
-import { Loader2, ImageIcon } from "lucide-react";
+import { Loader2, ImageIcon, ArrowRight } from "lucide-react";
 import { getPlaceholderImage } from "@/app/lib/placeholder-images";
 
 export function Gallery() {
@@ -49,21 +52,31 @@ export function Gallery() {
             <Loader2 className="w-10 h-10 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
-            {displayImages.map((item, i) => (
-              <div key={i} className={`relative overflow-hidden rounded-2xl group ${item.span}`}>
-                <Image 
-                  src={item.imageUrl} 
-                  alt={item.caption} 
-                  fill 
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                  <p className="text-white font-bold text-sm tracking-widest uppercase">{item.caption}</p>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
+              {displayImages.map((item, i) => (
+                <div key={i} className={`relative overflow-hidden rounded-2xl group ${item.span}`}>
+                  <Image 
+                    src={item.imageUrl} 
+                    alt={item.caption} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                    <p className="text-white font-bold text-sm tracking-widest uppercase">{item.caption}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            <div className="mt-12 text-center">
+              <Button asChild variant="outline" size="lg" className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold uppercase tracking-widest px-10 h-14 transition-all duration-300 group">
+                <Link href="/gallery" className="flex items-center gap-2">
+                  View Full Lookbook
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </section>
