@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -19,7 +20,6 @@ export function Services() {
           price: "$45",
           duration: "45 mins",
           featured: true,
-          image: getPlaceholderImage('service-fade')?.imageUrl
         },
         {
           id: "buzz-cut",
