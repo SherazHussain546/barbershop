@@ -12,8 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2 } from 'lucide-react';
-import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval } from 'date-fns';
+import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin } from 'lucide-react';
+import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval, isToday } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -48,10 +48,15 @@ export default function BookingPage() {
   const [phone, setPhone] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [selectedBarber, setSelectedBarber] = useState<string>('any');
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookedAppointment, setBookedAppointment] = useState<any>(null);
+
+  // Hydration safety
+  useEffect(() => {
+    setDate(new Date());
+  }, []);
 
   // Deep Link Synchronization
   useEffect(() => {
@@ -84,12 +89,14 @@ export default function BookingPage() {
     if (!date) return [];
     const slots = [];
     const start = setHours(setMinutes(date, 0), 9); // 9 AM
-    const end = setHours(setMinutes(date, 0), 18); // 6 PM
+    const end = setHours(setMinutes(date, 0), 19); // 7 PM
     
     const interval = eachMinuteOfInterval({ start, end }, { step: 30 });
     
     return interval.filter(slot => {
-      if (isBefore(slot, new Date())) return false;
+      // hydration safe check
+      const now = new Date();
+      if (isBefore(slot, now)) return false;
       
       const slotEnd = addMinutes(slot, totalDuration || 30);
       
@@ -180,7 +187,7 @@ export default function BookingPage() {
       <Navbar />
       
       <section className="py-20 flex-grow">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="max-w-5xl mx-auto px-4">
           <div className="mb-12 text-center">
             <Badge className="bg-primary mb-4 uppercase tracking-[0.2em] px-6 py-1.5 rounded-full">Secure Your Chair</Badge>
             <h1 className="text-4xl md:text-6xl font-headline font-black text-slate-900 uppercase">Book an <span className="text-primary italic">Experience</span></h1>
@@ -201,12 +208,13 @@ export default function BookingPage() {
             </div>
           </div>
 
-          <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden bg-white/80 backdrop-blur-xl">
+          <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white/80 backdrop-blur-xl">
             {step === 1 && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <CardHeader className="bg-slate-900 text-white p-10 text-center">
-                  <CardTitle className="text-2xl font-headline">Select Your Services</CardTitle>
-                  <CardDescription className="text-slate-400">Choose one or more master grooming services.</CardDescription>
+                <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <CardTitle className="text-3xl font-headline relative z-10">Select Your Services</CardTitle>
+                  <CardDescription className="text-slate-400 relative z-10">Choose one or more master grooming services from our menu.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-10">
                   <div className="grid gap-4">
@@ -231,7 +239,7 @@ export default function BookingPage() {
                           <div>
                             <p className="font-bold text-lg text-slate-900">{service.name}</p>
                             <p className="text-sm text-slate-500 flex items-center gap-2">
-                              <Clock className="w-3.5 h-3.5" /> {service.durationMinutes} mins
+                              <Clock className="w-3.5 h-3.5 text-secondary" /> {service.durationMinutes} mins
                             </p>
                           </div>
                         </div>
@@ -240,17 +248,18 @@ export default function BookingPage() {
                     ))}
                   </div>
                   
-                  <div className="mt-10 p-6 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center">
+                  <div className="mt-10 p-8 bg-slate-900 rounded-[2rem] border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total Investment</p>
-                      <p className="text-3xl font-black text-slate-900">€{totalPrice}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Selected Services ({selectedServices.length})</p>
+                      <p className="text-4xl font-black text-white">€{totalPrice}</p>
                     </div>
                     <Button 
                       disabled={selectedServices.length === 0}
                       onClick={() => setStep(2)}
-                      className="h-14 px-10 rounded-xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-sm"
+                      className="w-full md:w-auto h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-sm shadow-xl shadow-primary/20 group"
                     >
-                      Next Step
+                      Continue to Details
+                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
                 </CardContent>
@@ -259,59 +268,72 @@ export default function BookingPage() {
 
             {step === 2 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <CardHeader className="bg-slate-900 text-white p-10 text-center">
-                  <CardTitle className="text-2xl font-headline">Details & Preferences</CardTitle>
-                  <CardDescription className="text-slate-400">Let us know who's coming in and who you'd like to see.</CardDescription>
+                <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
+                  <CardTitle className="text-3xl font-headline relative z-10">Details & Preferences</CardTitle>
+                  <CardDescription className="text-slate-400 relative z-10">Personalize your visit to the Gentlecut Guild.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-6">
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">First Name</Label>
-                        <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Arthur" className="h-12 border-2 rounded-xl" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Last Name</Label>
-                        <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Morgan" className="h-12 border-2 rounded-xl" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">First Name</Label>
+                          <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Arthur" className="h-14 border-2 rounded-xl focus:ring-primary" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Last Name</Label>
+                          <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Morgan" className="h-14 border-2 rounded-xl focus:ring-primary" />
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Email Address</Label>
-                        <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="arthur@example.com" className="h-12 border-2 rounded-xl" />
+                        <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="arthur@example.com" className="h-14 border-2 rounded-xl focus:ring-primary" />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Phone Number</Label>
-                        <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="h-12 border-2 rounded-xl" />
+                        <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="h-14 border-2 rounded-xl focus:ring-primary" />
                       </div>
                     </div>
                     
                     <div className="space-y-6">
                       <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Preferred Artisan (Optional)</Label>
-                      <div className="grid gap-3">
+                      <div className="grid gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                         <div 
                           onClick={() => setSelectedBarber('any')}
                           className={cn(
-                            "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                            selectedBarber === 'any' ? "border-primary bg-primary/5" : "border-slate-100 bg-white"
+                            "flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all",
+                            selectedBarber === 'any' ? "border-primary bg-primary/5 shadow-md" : "border-slate-100 bg-white hover:border-slate-200"
                           )}
                         >
-                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-                            <User className="w-6 h-6" />
+                          <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                            <User className="w-7 h-7" />
                           </div>
-                          <p className="font-bold">Any Master Barber</p>
+                          <div>
+                            <p className="font-bold text-slate-900">Any Master Barber</p>
+                            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">First Available</p>
+                          </div>
                         </div>
                         {barbers?.map(barber => (
                           <div 
                             key={barber.id}
                             onClick={() => setSelectedBarber(barber.id)}
                             className={cn(
-                              "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                              selectedBarber === barber.id ? "border-primary bg-primary/5" : "border-slate-100 bg-white"
+                              "flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all",
+                              selectedBarber === barber.id ? "border-primary bg-primary/5 shadow-md" : "border-slate-100 bg-white hover:border-slate-200"
                             )}
                           >
-                            <img src={barber.profileImageUrl} className="w-10 h-10 rounded-full object-cover" />
+                            <div className="relative w-12 h-12">
+                              <img src={barber.profileImageUrl} className="w-full h-full rounded-xl object-cover shadow-sm" />
+                              {selectedBarber === barber.id && (
+                                <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center border-2 border-white">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                </div>
+                              )}
+                            </div>
                             <div>
-                              <p className="font-bold">{barber.name}</p>
-                              <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{barber.role}</p>
+                              <p className="font-bold text-slate-900">{barber.name}</p>
+                              <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{barber.role}</p>
                             </div>
                           </div>
                         ))}
@@ -319,14 +341,14 @@ export default function BookingPage() {
                     </div>
                   </div>
 
-                  <div className="mt-10 flex gap-4">
-                    <Button variant="outline" onClick={() => setStep(1)} className="h-14 px-8 rounded-xl border-2 font-bold uppercase tracking-widest">Back</Button>
+                  <div className="mt-12 flex gap-4">
+                    <Button variant="outline" onClick={() => setStep(1)} className="h-16 px-10 rounded-2xl border-2 font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors">Back</Button>
                     <Button 
                       disabled={!firstName || !lastName || !email || !phone}
                       onClick={() => setStep(3)}
-                      className="flex-1 h-14 rounded-xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest"
+                      className="flex-1 h-16 rounded-2xl bg-secondary hover:bg-secondary/90 font-bold uppercase tracking-widest shadow-xl shadow-secondary/20"
                     >
-                      Choose Time Slot
+                      Choose Appointment Time
                     </Button>
                   </div>
                 </CardContent>
@@ -335,59 +357,113 @@ export default function BookingPage() {
 
             {step === 3 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <CardHeader className="bg-slate-900 text-white p-10 text-center">
-                  <CardTitle className="text-2xl font-headline">Finalize Appointment</CardTitle>
-                  <CardDescription className="text-slate-400">Select an available slot on our artisan calendar.</CardDescription>
+                <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <CardTitle className="text-3xl font-headline relative z-10">Select Date & Time</CardTitle>
+                  <CardDescription className="text-slate-400 relative z-10">Find a moment that suits your schedule.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
-                      <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Select Date</Label>
-                      <div className="p-4 bg-white border-2 rounded-2xl">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                          <CalendarIcon className="w-4 h-4 text-primary" />
+                          Select Date
+                        </Label>
+                        {date && (
+                          <Badge variant="secondary" className="font-bold">
+                            {format(date, 'MMMM yyyy')}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] shadow-inner">
                         <Calendar
                           mode="single"
                           selected={date}
                           onSelect={setDate}
-                          className="rounded-md"
-                          disabled={(date) => isBefore(date, startOfDay(new Date()))}
+                          className="rounded-md mx-auto"
+                          disabled={(date) => {
+                            const today = startOfDay(new Date());
+                            return isBefore(date, today);
+                          }}
                         />
                       </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Available Times</Label>
-                      <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2">
-                        {availableSlots.length > 0 ? (
-                          availableSlots.map((slot, i) => (
-                            <Button
-                              key={i}
-                              variant={selectedTime === slot.toISOString() ? 'default' : 'outline'}
-                              onClick={() => setSelectedTime(slot.toISOString())}
-                              className={cn(
-                                "h-12 rounded-lg font-bold transition-all",
-                                selectedTime === slot.toISOString() ? "bg-primary shadow-lg shadow-primary/20" : ""
-                              )}
-                            >
-                              {format(slot, 'HH:mm')}
-                            </Button>
-                          ))
-                        ) : (
-                          <div className="col-span-3 py-10 text-center text-slate-400 italic">
-                            No slots available for this date.
-                          </div>
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          Available Slots
+                        </Label>
+                        {date && (
+                          <Badge className="bg-primary">
+                            {format(date, 'eee, MMM do')}
+                          </Badge>
                         )}
                       </div>
+                      
+                      <div className="relative group">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-3 custom-scrollbar p-1">
+                          {date && availableSlots.length > 0 ? (
+                            availableSlots.map((slot, i) => (
+                              <Button
+                                key={i}
+                                variant={selectedTime === slot.toISOString() ? 'default' : 'outline'}
+                                onClick={() => setSelectedTime(slot.toISOString())}
+                                className={cn(
+                                  "h-14 rounded-2xl font-bold transition-all text-sm relative group/slot",
+                                  selectedTime === slot.toISOString() 
+                                    ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105 border-primary" 
+                                    : "border-slate-200 hover:border-primary/50 hover:bg-primary/5"
+                                )}
+                              >
+                                {format(slot, 'HH:mm')}
+                                {selectedTime === slot.toISOString() && (
+                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center border border-primary animate-in zoom-in">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                  </div>
+                                )}
+                              </Button>
+                            ))
+                          ) : (
+                            <div className="col-span-full py-20 text-center space-y-4 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                              <CalendarIcon className="w-12 h-12 text-slate-200 mx-auto" />
+                              <p className="text-slate-400 italic font-medium px-10">
+                                {date ? "No availability for this date. Please try another day." : "Please select a date on the calendar to see available times."}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {selectedTime && (
+                        <div className="p-6 bg-slate-900 text-white rounded-3xl animate-in slide-in-from-bottom-2 duration-300 shadow-xl">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shrink-0">
+                              <Sparkles className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Selected Appointment</p>
+                              <p className="text-lg font-bold">
+                                {format(new Date(selectedTime), 'MMMM do')} @ {format(new Date(selectedTime), 'p')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="mt-10 flex gap-4">
-                    <Button variant="outline" onClick={() => setStep(2)} className="h-14 px-8 rounded-xl border-2 font-bold uppercase tracking-widest">Back</Button>
+                  <div className="mt-12 flex gap-4">
+                    <Button variant="outline" onClick={() => setStep(2)} className="h-16 px-10 rounded-2xl border-2 font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors">Back</Button>
                     <Button 
                       disabled={!selectedTime || isSubmitting}
                       onClick={handleBooking}
-                      className="flex-1 h-14 rounded-xl bg-secondary hover:bg-secondary/90 font-bold uppercase tracking-widest shadow-xl shadow-secondary/20"
+                      className="flex-1 h-16 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest shadow-xl shadow-primary/30 group"
                     >
-                      {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm Reservation'}
+                      {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
+                      Finalize Reservation
                     </Button>
                   </div>
                 </CardContent>
@@ -395,33 +471,52 @@ export default function BookingPage() {
             )}
 
             {step === 4 && (
-              <div className="animate-in zoom-in-95 duration-700 p-20 text-center">
-                <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <div className="animate-in zoom-in-95 duration-700 p-20 text-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl -z-10" />
+                
+                <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner animate-bounce">
                   <CheckCircle2 className="w-12 h-12" />
                 </div>
-                <h2 className="text-4xl font-headline font-black mb-4">You're Enrolled, {firstName}!</h2>
-                <p className="text-slate-500 text-lg mb-10 max-w-md mx-auto">
-                  Your mastery appointment is confirmed for <span className="text-slate-900 font-bold">{format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{format(bookedAppointment.startTime, 'p')}</span>.
+                <h2 className="text-4xl md:text-5xl font-headline font-black mb-4 uppercase tracking-tighter">You're <span className="text-primary italic">Enrolled</span>, {firstName}!</h2>
+                <p className="text-slate-500 text-lg mb-12 max-w-md mx-auto leading-relaxed">
+                  Your seat in the Guild is secured for <span className="text-slate-900 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">{format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{format(bookedAppointment.startTime, 'p')}</span>.
                 </p>
                 
-                <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 max-w-sm mx-auto space-y-4 mb-10">
-                  <div className="flex items-center gap-3 text-slate-600">
-                    <Scissors className="w-4 h-4 text-primary" />
-                    <p className="text-sm font-bold">{selectedServiceObjects.map(s => s.name).join(', ')}</p>
+                <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl max-w-md mx-auto space-y-6 mb-12 text-left relative group">
+                  <div className="absolute top-6 right-8 text-slate-100 group-hover:text-primary/10 transition-colors">
+                    <Sparkles className="w-16 h-16" />
                   </div>
-                  <div className="flex items-center gap-3 text-slate-600">
-                    <User className="w-4 h-4 text-primary" />
-                    <p className="text-sm font-bold">{selectedBarber === 'any' ? 'Any Master' : barbers?.find(b => b.id === selectedBarber)?.name}</p>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <Scissors className="w-6 h-6 text-primary mt-1 shrink-0" />
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Grooming Services</p>
+                      <p className="text-lg font-bold text-slate-900">{selectedServiceObjects.map(s => s.name).join(', ')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <User className="w-6 h-6 text-secondary mt-1 shrink-0" />
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Assigned Artisan</p>
+                      <p className="text-lg font-bold text-slate-900">{selectedBarber === 'any' ? 'Guild Master (First Available)' : barbers?.find(b => b.id === selectedBarber)?.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <MapPin className="w-6 h-6 text-emerald-500 mt-1 shrink-0" />
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Location</p>
+                      <p className="text-sm font-bold text-slate-900 leading-tight">123 Gentleman's Row, Suite 101<br />New York, NY 10001</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Button onClick={generateICS} className="h-14 bg-secondary hover:bg-secondary/90 text-white font-bold uppercase tracking-widest gap-2 rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                  <Button onClick={generateICS} className="h-16 bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-widest gap-3 rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95">
                     <Download className="w-5 h-5" /> Add to Calendar
                   </Button>
-                  <Button variant="outline" className="h-14 border-2 font-bold uppercase tracking-widest gap-2 rounded-xl" asChild>
-                    <a href={`mailto:${email}?subject=My Gentlecut Appointment&body=I have booked an appointment for ${selectedServiceObjects.map(s => s.name).join(', ')} on ${format(bookedAppointment.startTime, 'PPPP')} at ${format(bookedAppointment.startTime, 'p')}.`}>
-                      <Mail className="w-5 h-5" /> Notify Me via Email
+                  <Button variant="outline" className="h-16 border-2 border-slate-200 font-bold uppercase tracking-widest gap-3 rounded-2xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95" asChild>
+                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at 123 Gentleman's Row!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
+                      <Mail className="w-5 h-5" /> Email Confirmation
                     </a>
                   </Button>
                 </div>
@@ -432,6 +527,23 @@ export default function BookingPage() {
       </section>
 
       <Footer />
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #e2e2e2;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #d4d4d4;
+        }
+      `}</style>
     </main>
   );
 }
