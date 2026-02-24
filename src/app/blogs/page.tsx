@@ -1,4 +1,3 @@
-
 'use client';
 
 import { use } from 'react';
@@ -32,12 +31,12 @@ export default function BlogListing(props: { params: Promise<any>, searchParams:
       <section className="py-24 flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <Badge className="bg-primary mb-4 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">The Guild Journal</Badge>
+            <Badge className="bg-primary mb-4 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">Style Journal</Badge>
             <h1 className="text-5xl md:text-7xl font-headline font-black text-slate-900 mb-6 uppercase tracking-tighter">
               Timeless <span className="text-primary italic">Style</span> & Wisdom
             </h1>
             <p className="text-slate-500 max-w-2xl mx-auto text-xl font-light">
-              Grooming tips, heritage insights, and modern lifestyle advice from the masters of the Guild.
+              Grooming tips, heritage insights, and modern lifestyle advice from the masters of our shop.
             </p>
           </div>
 

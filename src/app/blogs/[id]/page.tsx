@@ -1,4 +1,3 @@
-
 'use client';
 
 import { use } from 'react';
@@ -98,10 +97,10 @@ export default function BlogPost(props: { params: Promise<{ id: string }>, searc
 
               <div className="mt-20 pt-12 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-headline text-2xl font-black italic">GC</div>
+                  <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-headline text-2xl font-black italic">BS</div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Published By</p>
-                    <p className="text-lg font-bold text-slate-900">The Gentlecut Guild</p>
+                    <p className="text-lg font-bold text-slate-900">The Barber shop</p>
                   </div>
                 </div>
                 <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20" asChild>

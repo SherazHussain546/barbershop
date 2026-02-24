@@ -38,7 +38,7 @@ const prompt = ai.definePrompt({
   name: 'aiStyleRecommenderPrompt',
   input: {schema: AiStyleRecommenderInputSchema},
   output: {schema: AiStyleRecommenderOutputSchema},
-  prompt: `You are an expert barber and style consultant at Gentlecut Guild. Your task is to provide personalized hairstyle and beard style suggestions to customers based on their preferences and characteristics.
+  prompt: `You are an expert barber and style consultant at Barber shop. Your task is to provide personalized hairstyle and beard style suggestions to customers based on their preferences and characteristics.
 
 Here is the customer's information:
 - Face Shape: {{{faceShape}}}

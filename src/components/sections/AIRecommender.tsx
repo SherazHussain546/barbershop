@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -133,7 +132,7 @@ export function AIRecommender() {
               <div className="p-8 border-b border-border bg-slate-50 flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-headline font-bold">Your Style Recommendation</h3>
-                  <p className="text-sm text-muted-foreground uppercase tracking-wider font-bold mt-1">Curated by Gentlecut Guild AI</p>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider font-bold mt-1">Curated by Barber shop AI</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleReset} className="hover:bg-primary/10 hover:text-primary rounded-full">
                   <RotateCcw className="w-5 h-5" />
@@ -172,7 +171,7 @@ export function AIRecommender() {
                     </div>
                   </div>
                   <div className="bg-slate-50 rounded-2xl p-8 border-2 border-dashed border-slate-200">
-                    <h4 className="text-lg font-headline font-bold mb-4 text-secondary">Barber's Rationale</h4>
+                    <h4 className="text-lg font-headline font-bold mb-4 text-secondary">Artisan's Rationale</h4>
                     <p className="text-slate-600 leading-relaxed italic">
                       "{result.recommendationRationale}"
                     </p>

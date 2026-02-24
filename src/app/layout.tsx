@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'Gentlecut Guild | Premium Barbering',
+  title: 'Barber shop | Premium Barbering',
   description: 'Sophisticated grooming for the modern gentleman. Experience classic barbershop allure with modern styling.',
 };
 

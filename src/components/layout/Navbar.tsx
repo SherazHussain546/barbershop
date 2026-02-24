@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -26,7 +25,7 @@ export function Navbar() {
               <Scissors className="w-6 h-6" />
             </div>
             <span className="font-headline text-2xl font-black tracking-tight text-foreground uppercase">
-              Gentlecut <span className="text-primary">Guild</span>
+              Barber <span className="text-primary">shop</span>
             </span>
           </Link>
 

@@ -1,7 +1,6 @@
-
 'use server';
 /**
- * @fileOverview A flow to generate SEO-rich blog posts for the Gentlecut Guild.
+ * @fileOverview A flow to generate SEO-rich blog posts for the Barber shop.
  */
 
 import { ai } from '@/ai/genkit';
@@ -30,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'generateBlogPrompt',
   input: { schema: GenerateBlogInputSchema },
   output: { schema: GenerateBlogOutputSchema },
-  prompt: `You are a high-end copywriter for Gentlecut Guild, a premium barbershop.
+  prompt: `You are a high-end copywriter for Barber shop, a premium barbershop.
 Your task is to write a sophisticated, engaging, and SEO-rich blog post.
 
 Topic: {{{topic}}}

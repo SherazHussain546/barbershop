@@ -12,7 +12,7 @@ export function Footer() {
                 <Scissors className="w-6 h-6" />
               </div>
               <span className="font-headline text-2xl font-black tracking-tight uppercase">
-                Gentlecut <span className="text-primary">Guild</span>
+                Barber <span className="text-primary">shop</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
@@ -31,7 +31,7 @@ export function Footer() {
             <h4 className="text-lg font-headline font-bold mb-6 text-primary uppercase tracking-widest">Quick Links</h4>
             <ul className="space-y-3">
               <li><Link href="/#services" className="text-slate-400 hover:text-white transition-colors text-sm">Our Services</Link></li>
-              <li><Link href="/#barbers" className="text-slate-400 hover:text-white transition-colors text-sm">Guild Masters</Link></li>
+              <li><Link href="/#barbers" className="text-slate-400 hover:text-white transition-colors text-sm">Our Barbers</Link></li>
               <li><Link href="/blogs" className="text-slate-400 hover:text-white transition-colors text-sm">Style Journal</Link></li>
               <li><Link href="/#ai-stylist" className="text-slate-400 hover:text-white transition-colors text-sm">AI Style Concierge</Link></li>
               <li><Link href="/gallery" className="text-slate-400 hover:text-white transition-colors text-sm">Visual Lookbook</Link></li>
@@ -52,7 +52,7 @@ export function Footer() {
               </li>
               <li className="flex gap-3 text-slate-400 text-sm">
                 <Mail className="w-5 h-5 text-secondary shrink-0" />
-                <span>guild@gentlecut.ie</span>
+                <span>shop@barbershop.ie</span>
               </li>
             </ul>
           </div>
@@ -78,7 +78,7 @@ export function Footer() {
 
         <div className="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
           <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
-            <p>© 2024 Gentlecut Guild. All rights reserved.</p>
+            <p>© 2024 Barber shop. All rights reserved.</p>
             <span className="hidden md:block w-px h-4 bg-white/10" />
             <p>Built by <Link href="https://synctech.ie" target="_blank" className="text-primary hover:underline font-bold">SYNC TECH Solutions</Link></p>
           </div>

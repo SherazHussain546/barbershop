@@ -24,7 +24,6 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
   const firestore = useFirestore();
   const auth = getAuth();
 
-  // Queries for real-time stats
   const appointmentsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'appointments'), orderBy('createdAt', 'desc'));
@@ -44,13 +43,11 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
   const { data: barbers, isLoading: barbersLoading } = useCollection(barbersQuery);
   const { data: services, isLoading: servicesLoading } = useCollection(servicesQuery);
 
-  // Calculate Real-time Stats
   const stats = useMemo(() => {
     const totalAppts = appointments?.length || 0;
     const totalBarbers = barbers?.length || 0;
     const totalServs = services?.length || 0;
     
-    // Revenue Year to Date
     const yearStart = startOfYear(new Date());
     const revenueYTD = appointments?.reduce((sum, appt) => {
       const apptDate = (appt.startTime as any)?.toDate();
@@ -98,7 +95,7 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
               <Scissors className="w-6 h-6" />
             </div>
             <CardTitle className="text-3xl font-headline font-bold uppercase tracking-tight">Admin Portal</CardTitle>
-            <CardDescription className="text-white/70">Restricted access for Guild Masters only.</CardDescription>
+            <CardDescription className="text-white/70">Restricted access for Shop Managers only.</CardDescription>
           </CardHeader>
           <CardContent className="p-8 bg-white">
             <form onSubmit={handleLogin} className="space-y-6">
@@ -112,7 +109,7 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
                 <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Email Address</Label>
                 <Input 
                   type="email" 
-                  placeholder="admin@gentlecut.com" 
+                  placeholder="admin@barbershop.com" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-12 border-2 focus:ring-primary rounded-xl"
@@ -131,7 +128,7 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
                 />
               </div>
               <Button type="submit" disabled={loginLoading} className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-primary/20">
-                {loginLoading ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : 'Enter the Guild'}
+                {loginLoading ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : 'Enter the Shop'}
               </Button>
             </form>
           </CardContent>
@@ -146,13 +143,13 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-10">
         <h1 className="text-4xl font-headline font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500 mt-1">Welcome back, Guild Master. Here's what's happening today.</p>
+        <p className="text-slate-500 mt-1">Welcome back. Here's what's happening at the shop today.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         {[
           { label: 'Total Appointments', value: stats.totalAppointments },
-          { label: 'Active Artisans', value: stats.activeArtisans },
+          { label: 'Active Barbers', value: stats.activeArtisans },
           { label: 'Revenue (YTD)', value: stats.revenueYTD },
           { label: 'Service Types', value: stats.serviceTypes },
         ].map((stat, i) => (
@@ -172,7 +169,7 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
           <CardHeader className="bg-white border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-xl font-headline font-bold">Recent Appointments</CardTitle>
-              <CardDescription>Latest bookings across all artisans.</CardDescription>
+              <CardDescription>Latest bookings across all barbers.</CardDescription>
             </div>
             <Button variant="outline" size="sm" className="rounded-full text-xs font-bold uppercase tracking-tighter" asChild>
               <a href="/admin/appointments">View All</a>

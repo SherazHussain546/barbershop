@@ -80,7 +80,7 @@ function BookingContent() {
   const allBookableItems = useMemo(() => {
     const items = [];
     if (services) items.push(...services.map(s => ({ ...s, type: 'SERVICE' as const })));
-    if (deals) items.push(...deals.map(d => ({ ...d, name: d.title, type: 'DEAL' as const, price: 0 }))); // Deals often imply customized pricing or discount, placeholder 0
+    if (deals) items.push(...deals.map(d => ({ ...d, name: d.title, type: 'DEAL' as const, price: 0 }))); 
     if (subscriptions) items.push(...subscriptions.map(s => ({ ...s, type: 'SUBSCRIPTION' as const })));
     return items;
   }, [services, deals, subscriptions]);
@@ -195,8 +195,8 @@ function BookingContent() {
       'BEGIN:VEVENT',
       `DTSTART:${start}`,
       `DTEND:${end}`,
-      `SUMMARY:Gentlecut Guild Appointment - ${itemNames}`,
-      `DESCRIPTION:Your appointment for ${itemNames} at Gentlecut Guild.`,
+      `SUMMARY:Barber shop Appointment - ${itemNames}`,
+      `DESCRIPTION:Your appointment for ${itemNames} at Barber shop.`,
       'LOCATION:42 Grafton Street, Dublin 2, D02 V297, Ireland',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -205,7 +205,7 @@ function BookingContent() {
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'gentlecut-appointment.ics');
+    link.setAttribute('download', 'barbershop-appointment.ics');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -384,7 +384,7 @@ function BookingContent() {
                 <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
                   <CardTitle className="text-3xl font-headline relative z-10">Details & Preferences</CardTitle>
-                  <CardDescription className="text-slate-400 relative z-10">Personalize your visit to the Gentlecut Guild.</CardDescription>
+                  <CardDescription className="text-slate-400 relative z-10">Personalize your visit to the Barber shop.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -592,7 +592,7 @@ function BookingContent() {
                 </div>
                 <h2 className="text-4xl md:text-5xl font-headline font-black mb-4 uppercase tracking-tighter">You're <span className="text-primary italic">Enrolled</span>, {firstName}!</h2>
                 <p className="text-slate-500 text-lg mb-12 max-w-md mx-auto leading-relaxed">
-                  Your seat in the Guild is secured for <span className="text-slate-900 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">{bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{bookedAppointment && format(bookedAppointment.startTime, 'p')}</span>.
+                  Your seat in the Shop is secured for <span className="text-slate-900 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">{bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{bookedAppointment && format(bookedAppointment.startTime, 'p')}</span>.
                 </p>
                 
                 <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl max-w-md mx-auto space-y-6 mb-12 text-left relative group">
@@ -610,7 +610,7 @@ function BookingContent() {
                     <User className="w-6 h-6 text-secondary mt-1 shrink-0" />
                     <div>
                       <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Assigned Artisan</p>
-                      <p className="text-lg font-bold text-slate-900">{selectedBarber === 'any' ? 'Guild Master (First Available)' : barbers?.find(b => b.id === selectedBarber)?.name}</p>
+                      <p className="text-lg font-bold text-slate-900">{selectedBarber === 'any' ? 'Master Barber (First Available)' : barbers?.find(b => b.id === selectedBarber)?.name}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 relative z-10">
@@ -627,7 +627,7 @@ function BookingContent() {
                     <Download className="w-5 h-5" /> Add to Calendar
                   </Button>
                   <Button variant="outline" className="h-16 border-2 border-slate-200 font-bold uppercase tracking-widest gap-3 rounded-2xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95" asChild>
-                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedItemObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at Grafton Street!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
+                    <a href={`mailto:${email}?subject=My Barber shop Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Barber shop.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedItemObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at Grafton Street!%0D%0A%0D%0ABest regards,%0D%0AThe Shop`}>
                       <Mail className="w-5 h-5" /> Email Confirmation
                     </a>
                   </Button>

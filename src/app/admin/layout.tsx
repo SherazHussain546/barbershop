@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use } from 'react';
@@ -64,7 +63,7 @@ export default function AdminLayout(props: { children: React.ReactNode, params: 
             </div>
             {!isCollapsed && (
               <span className="font-headline font-bold text-xl uppercase tracking-tight whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
-                Guild <span className="text-primary">Admin</span>
+                Shop <span className="text-primary">Admin</span>
               </span>
             )}
           </Link>

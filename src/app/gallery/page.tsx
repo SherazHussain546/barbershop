@@ -30,11 +30,9 @@ export default function GalleryPage(props: { params: Promise<any>, searchParams:
   const { data: dbImages, isLoading } = useCollection(galleryQuery);
 
   const handleDownload = (url: string, filename: string) => {
-    // For cross-origin images, the 'download' attribute might be ignored.
-    // Opening in a new tab is the most reliable fallback for a prototype.
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename || 'gentlecut-guild-style.jpg';
+    link.download = filename || 'barbershop-style.jpg';
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
@@ -52,10 +50,10 @@ export default function GalleryPage(props: { params: Promise<any>, searchParams:
               Visual Portfolio
             </Badge>
             <h1 className="text-5xl md:text-7xl font-headline font-black text-slate-900 mb-6 uppercase tracking-tighter">
-              The <span className="text-primary italic">Guild</span> Lookbook
+              The <span className="text-primary italic">Shop</span> Lookbook
             </h1>
             <p className="text-slate-500 max-w-2xl mx-auto text-xl font-light">
-              Explore our latest masterpieces and salon atmosphere. Every image represents our commitment to the art of grooming.
+              Explore our latest masterpieces and shop atmosphere. Every image represents our commitment to the art of grooming.
             </p>
           </div>
 
@@ -117,7 +115,7 @@ export default function GalleryPage(props: { params: Promise<any>, searchParams:
               <div className="bg-white md:w-80 p-8 flex flex-col justify-between">
                 <div>
                   <DialogHeader className="mb-6">
-                    <p className="text-primary font-bold text-[10px] uppercase tracking-[0.3em] mb-2">Guild Masterpiece</p>
+                    <p className="text-primary font-bold text-[10px] uppercase tracking-[0.3em] mb-2">Shop Masterpiece</p>
                     <DialogTitle className="text-2xl font-headline font-bold text-slate-900 leading-tight">
                       {selectedImage.caption}
                     </DialogTitle>

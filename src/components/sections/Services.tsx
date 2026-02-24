@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -43,7 +42,7 @@ export function Services() {
     {
       category: "Haircuts",
       items: [
-        { id: "1", name: "Guild Classic", description: "Tailored scissor or clipper cut including personal consultation.", price: 45, durationMinutes: 45 },
+        { id: "1", name: "Shop Classic", description: "Tailored scissor or clipper cut including personal consultation.", price: 45, durationMinutes: 45 },
       ]
     }
   ];
@@ -144,7 +143,7 @@ export function Services() {
         {dbSubs && dbSubs.length > 0 && (
           <div className="mt-24 pt-24 border-t border-slate-100">
             <div className="text-center mb-16">
-              <Badge className="bg-primary mb-4">Guild Memberships</Badge>
+              <Badge className="bg-primary mb-4">Shop Memberships</Badge>
               <h2 className="text-4xl font-headline font-black">Join the <span className="text-primary">Elite</span> Club</h2>
               <p className="text-muted-foreground mt-4">Exclusive subscription tiers for our regular distinguished patrons.</p>
             </div>

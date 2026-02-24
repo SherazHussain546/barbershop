@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -79,7 +78,7 @@ export function Hero() {
           </h1>
           
           <p className="font-body text-xl md:text-2xl text-slate-200 mb-12 leading-relaxed max-w-xl font-light">
-            Gentlecut Guild is more than a barbershop; it's a sanctuary of style. Experience precision grooming where tradition meets contemporary artistry.
+            Our Barber shop is more than just a place for a cut; it's a sanctuary of style. Experience precision grooming where tradition meets contemporary artistry.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6">

@@ -52,7 +52,7 @@ export function Barbers() {
             <Badge className="bg-secondary mb-4 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
               Our Artisans
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-headline font-black">Meet the <span className="text-primary">Guild Masters</span></h2>
+            <h2 className="text-4xl md:text-5xl font-headline font-black">Meet the <span className="text-primary">Master Barbers</span></h2>
             <p className="mt-4 text-muted-foreground text-lg">Our barbers are more than technicians; they are craftsmen dedicated to the art of grooming.</p>
           </div>
         </div>
