@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use } from 'react';
@@ -12,7 +13,8 @@ import {
   Briefcase, 
   Calendar,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useUser } from '@/firebase';
@@ -39,6 +41,7 @@ export default function AdminLayout(props: { children: React.ReactNode, params: 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/appointments', label: 'Appointments', icon: Calendar },
+    { href: '/admin/blogs', label: 'Journal', icon: FileText },
     { href: '/admin/services', label: 'Services', icon: Briefcase },
     { href: '/admin/barbers', label: 'Barbers', icon: Users },
     { href: '/admin/gallery', label: 'Gallery', icon: ImageIcon },

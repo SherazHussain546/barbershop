@@ -1,36 +1,20 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * CORE PHILOSOPHY
-     * This ruleset enforces a strict hybrid security model tailored for a barber shop ecosystem. 
-     * In this prototype version, we have simplified administrative checks to ensure 
-     * accessibility during development while maintaining owner-based privacy for customers.
-     */
-
-    // --- Global Helper Functions ---
-
-    /** Checks if the request is from an authenticated user. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /** Checks if the authenticated user's UID matches the provided userId. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** 
-     * Checks if the current user is an admin.
-     * In production, this would strictly check for a record in the roles_admin collection.
-     * For the prototype, we allow all authenticated users to manage the Guild.
-     */
     function isAdmin() {
       return isSignedIn();
     }
 
-    /** Appointment-specific participant checks using denormalized fields. */
     function isAppointmentCustomer(data) {
       return isSignedIn() && data.customerId == request.auth.uid;
     }
@@ -39,20 +23,12 @@ service cloud.firestore {
       return isSignedIn() && data.barberId == request.auth.uid;
     }
 
-    // --- Collection Rules ---
-
-    /**
-     * @description Rules for the admin roles collection.
-     */
     match /roles_admin/{adminId} {
       allow get: if isOwner(adminId) || isAdmin();
       allow list: if isAdmin();
       allow create, update, delete: if false;
     }
 
-    /**
-     * @description Private profile data for customers.
-     */
     match /customers/{customerId} {
       allow get: if isOwner(customerId) || isAdmin();
       allow list: if isAdmin();
@@ -61,9 +37,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    /**
-     * @description Publicly readable barber profiles and their nested data.
-     */
     match /barbers/{barberId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
@@ -79,65 +52,47 @@ service cloud.firestore {
       }
     }
 
-    /**
-     * @description Shared appointment documents.
-     */
     match /appointments/{appointmentId} {
       allow get: if isAppointmentCustomer(resource.data) || isAppointmentBarber(resource.data) || isAdmin();
-      // Allow listing for admins or if filtering by customerId for regular users.
       allow list: if isAdmin() || (isSignedIn() && resource.data.customerId == request.auth.uid);
       allow create: if isSignedIn();
       allow update: if isAppointmentCustomer(resource.data) || isAppointmentBarber(resource.data) || isAdmin();
       allow delete: if isAdmin();
     }
 
-    /**
-     * @description Public service catalog definitions.
-     */
     match /serviceCategories/{serviceCategoryId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Public service details.
-     */
     match /services/{serviceId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Publicly readable promotional deals.
-     */
     match /deals/{dealId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    /**
-     * @description Publicly readable subscription tiers.
-     */
     match /subscriptions/{subscriptionId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    /**
-     * @description General gallery images for salon ambiance.
-     */
     match /galleryImages/{imageId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description AI-driven style recommendations.
-     */
     match /styleRecommendations/{recommendationId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
+    match /blogs/{blogId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
