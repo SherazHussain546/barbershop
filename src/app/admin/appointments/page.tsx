@@ -24,7 +24,8 @@ import {
   Plus,
   ChevronRight,
   ArrowLeft,
-  Sparkles
+  Sparkles,
+  MapPin
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, addMinutes, setHours, setMinutes, eachMinuteOfInterval, isBefore, addDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -47,8 +48,8 @@ import {
 } from "@/components/ui/select";
 
 export default function AppointmentsAdmin(props: { params: Promise<any>, searchParams: Promise<any> }) {
-  use(props.params);
-  use(props.searchParams);
+  const resolvedParams = use(props.params);
+  const resolvedSearchParams = use(props.searchParams);
   const { toast } = useToast();
   const firestore = useFirestore();
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
@@ -343,7 +344,7 @@ export default function AppointmentsAdmin(props: { params: Promise<any>, searchP
                       </div>
                       <div className="space-y-4">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Available Slots (10:00 - 19:00)</Label>
-                        <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar p-1">
                           {availableSlots.map((slot, i) => (
                             <button
                               key={i}
