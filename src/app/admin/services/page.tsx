@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Briefcase, Tag, Crown, Plus, Trash2, Loader2, Scissors, CheckCircle2, Percent, Euro } from 'lucide-react';
@@ -322,7 +323,7 @@ export default function ServicesManagement(props: { params: Promise<any>, search
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {deals?.map(d => (
                     <div key={d.id} className="p-6 bg-slate-900 text-white rounded-[2rem] relative overflow-hidden group border border-white/5 shadow-xl">
-                      <Tag className="absolute -right-2 -top-2 w-20 h-20 text-white/10 rotate-12 group-hover:scale-110 transition-transform" />
+                      <Tag className="absolute -right-4 -top-4 w-24 h-24 text-white/10 rotate-12 group-hover:scale-110 transition-transform" />
                       <div className="relative z-10">
                         <h4 className="text-xl font-bold font-headline mb-1">{d.title}</h4>
                         <div className="flex items-center gap-2 mb-4">
