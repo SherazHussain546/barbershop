@@ -3,21 +3,26 @@
 import { use } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { useDoc } from '@/firebase';
+import { useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Calendar, User, ArrowLeft, Share2, Facebook, Twitter, Link as LinkIcon } from 'lucide-react';
+import { Loader2, Calendar, User, ArrowLeft, Share2, Facebook, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 export default function BlogPost(props: { params: Promise<{ id: string }>, searchParams: Promise<any> }) {
   const params = use(props.params);
   use(props.searchParams);
   const firestore = useFirestore();
-  const { data: blog, isLoading } = useDoc(doc(firestore, 'blogs', params.id));
+  
+  const blogRef = useMemoFirebase(() => {
+    if (!firestore || !params.id) return null;
+    return doc(firestore, 'blogs', params.id);
+  }, [firestore, params.id]);
+
+  const { data: blog, isLoading } = useDoc(blogRef);
 
   if (isLoading) {
     return (
@@ -84,7 +89,7 @@ export default function BlogPost(props: { params: Promise<{ id: string }>, searc
                 "{blog.excerpt}"
               </div>
 
-              {/* Markdown Content (Rendered as styled text for this prototype) */}
+              {/* Markdown Content */}
               <div className="prose prose-slate prose-xl max-w-none text-slate-700 leading-loose space-y-8 font-body">
                 {blog.content.split('\n').map((line, i) => {
                   if (line.startsWith('##')) return <h2 key={i} className="text-3xl font-headline font-bold text-slate-900 mt-12 mb-6 pt-4">{line.replace('## ', '')}</h2>;

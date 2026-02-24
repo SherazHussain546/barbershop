@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, use, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, orderBy } from 'firebase/firestore';
+import { useState, use, useMemo, useEffect } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useAuth } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, Users, Calendar, TrendingUp, Scissors, Loader2, AlertCircle } from 'lucide-react';
-import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { Briefcase, Users, Calendar, Scissors, Loader2, AlertCircle } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { format, startOfYear, isAfter } from 'date-fns';
 
 export default function AdminDashboard(props: { params: Promise<any>, searchParams: Promise<any> }) {
@@ -20,9 +20,15 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
   const [password, setPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [mounted, setMounted] = useState(false);
   
   const firestore = useFirestore();
-  const auth = getAuth();
+  const auth = useAuth();
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const appointmentsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -44,6 +50,16 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
   const { data: services, isLoading: servicesLoading } = useCollection(servicesQuery);
 
   const stats = useMemo(() => {
+    // Return empty stats during SSR or before hydration to avoid mismatch
+    if (!mounted) {
+      return {
+        totalAppointments: '0',
+        activeArtisans: '0',
+        revenueYTD: '€0',
+        serviceTypes: '0'
+      };
+    }
+
     const totalAppts = appointments?.length || 0;
     const totalBarbers = barbers?.length || 0;
     const totalServs = services?.length || 0;
@@ -63,7 +79,7 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
       revenueYTD: `€${revenueYTD.toLocaleString()}`,
       serviceTypes: totalServs.toString()
     };
-  }, [appointments, barbers, services]);
+  }, [appointments, barbers, services, mounted]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +94,8 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
     }
   };
 
-  if (isUserLoading) {
+  // Prevent rendering until mounted to avoid hydration errors
+  if (!mounted || isUserLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
