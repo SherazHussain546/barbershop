@@ -77,8 +77,10 @@ export function Footer() {
         </div>
 
         <div className="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
             <p>© 2024 Gentlecut Guild. All rights reserved.</p>
+            <span className="hidden md:block w-px h-4 bg-white/10" />
+            <p>Built by <Link href="https://synctech.ie" target="_blank" className="text-primary hover:underline font-bold">SYNC TECH Solutions</Link></p>
           </div>
           <div className="flex gap-8">
             <Link href="#" className="hover:text-white">Privacy Policy</Link>
