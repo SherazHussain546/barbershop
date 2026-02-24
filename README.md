@@ -5,10 +5,27 @@ A high-end barbershop platform featuring AI style recommendations, online bookin
 ## Deployment Guide
 
 ### GitHub Setup
-1. Create a new repository on GitHub.
-2. Initialize git: `git init`.
-3. Add and commit files: `git add .` and `git commit -m "Initial commit"`.
-4. Push to your repository. Note that `.env` and `src/firebase/config.ts` are ignored for security.
+Follow these steps to push your code to GitHub:
+
+1. **Initialize and Commit**:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   ```
+
+2. **Branch and Remote**:
+   ```bash
+   git branch -M main
+   git remote add origin https://github.com/SherazHussain546/barbershop.git
+   ```
+
+3. **Push**:
+   ```bash
+   git push -u origin main
+   ```
+
+*Note: The `.env` and `src/firebase/config.ts` files are ignored via `.gitignore` for security. You will need to manually configure these on your hosting provider.*
 
 ### Netlify Deployment
 1. Connect your repository to Netlify.
