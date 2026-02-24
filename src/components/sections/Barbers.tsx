@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Instagram, Loader2 } from "lucide-react";
@@ -67,11 +66,10 @@ export function Barbers() {
             {displayBarbers.map((barber) => (
               <div key={barber.id} className="group relative">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-xl">
-                  <Image 
+                  <img 
                     src={barber.profileImageUrl} 
                     alt={barber.name} 
-                    fill 
-                    className="object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   

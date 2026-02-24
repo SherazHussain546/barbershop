@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Plus, Trash2, Loader2, Instagram, Upload, Link as LinkIcon } from 'lucide-react';
-import Image from 'next/image';
+import { Users, Plus, Trash2, Loader2, Instagram, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -180,7 +179,7 @@ export default function BarberManagement(props: { params: Promise<any>, searchPa
                   >
                     {filePreview ? (
                       <div className="relative aspect-[4/5] rounded-lg overflow-hidden border">
-                        <Image src={filePreview} alt="Preview" fill className="object-cover" />
+                        <img src={filePreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
                       </div>
                     ) : (
                       <div className="flex flex-col items-center py-4">
@@ -242,11 +241,10 @@ export default function BarberManagement(props: { params: Promise<any>, searchPa
                 {barbers.map((barber) => (
                   <div key={barber.id} className="group relative rounded-xl overflow-hidden bg-slate-100 border border-slate-100 shadow-sm flex flex-col">
                     <div className="relative aspect-[4/5]">
-                      <Image 
+                      <img 
                         src={barber.profileImageUrl} 
                         alt={barber.name} 
-                        fill 
-                        className="object-cover"
+                        className="absolute inset-0 w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center p-6 gap-4">
                         <Button 

@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Image as ImageIcon, Plus, Trash2, Loader2, ExternalLink, Upload, Link as LinkIcon } from 'lucide-react';
-import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -44,7 +43,6 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
         });
         return;
       }
-      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setFilePreview(reader.result as string);
@@ -78,7 +76,6 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
       displayOrder: images ? images.length : 0,
     };
 
-    // Non-blocking mutation with contextual error handling
     addDoc(colRef, imageData).catch(async (err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: colRef.path,
@@ -87,10 +84,8 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
       }));
     });
     
-    // Reset form optimistically
     setImageUrl('');
     setCaption('');
-    setSelectedFile(null);
     setFilePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     
@@ -104,7 +99,6 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
     if (!firestore) return;
     const docRef = doc(firestore, 'galleryImages', id);
     
-    // Non-blocking mutation with contextual error handling
     deleteDoc(docRef).catch(async (err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: docRef.path,
@@ -141,7 +135,6 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
               <Tabs defaultValue="url" className="w-full" onValueChange={() => {
                 setImageUrl('');
                 setFilePreview(null);
-                setSelectedFile(null);
               }}>
                 <TabsList className="grid w-full grid-cols-2 mb-4 bg-slate-100 p-1 rounded-xl">
                   <TabsTrigger value="url" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
@@ -175,7 +168,7 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
                     >
                       {filePreview ? (
                         <div className="relative aspect-video rounded-lg overflow-hidden border">
-                          <Image src={filePreview} alt="Preview" fill className="object-cover" />
+                          <img src={filePreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
@@ -237,11 +230,10 @@ export default function GalleryManagement(props: { params: Promise<any>, searchP
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {images.map((image) => (
                   <div key={image.id} className="group relative rounded-xl overflow-hidden bg-slate-100 aspect-square border border-slate-100 shadow-sm">
-                    <Image 
+                    <img 
                       src={image.imageUrl} 
                       alt={image.caption} 
-                      fill 
-                      className="object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
                       <p className="text-white font-bold text-lg font-headline mb-4">{image.caption}</p>
