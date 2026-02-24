@@ -67,7 +67,7 @@ export function Services() {
         {dbDeals && dbDeals.length > 0 && (
           <div className="mb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dbDeals.map(deal => (
-              <div key={deal.id} className="bg-secondary p-6 rounded-2xl text-white flex flex-col gap-6 group overflow-hidden relative shadow-xl shadow-secondary/20 animate-in fade-in slide-in-from-bottom-4">
+              <div key={deal.id} className="bg-primary p-6 rounded-2xl text-white flex flex-col gap-6 group overflow-hidden relative shadow-xl shadow-primary/20 animate-in fade-in slide-in-from-bottom-4">
                 <Tag className="absolute -right-4 -top-4 w-24 h-24 text-white/10 rotate-12" />
                 <div className="flex justify-between items-start relative z-10">
                   <div className="flex-1">
@@ -76,11 +76,13 @@ export function Services() {
                     <p className="text-sm text-white/80 mt-1">{deal.description}</p>
                   </div>
                   <div className="text-right ml-4">
-                    <p className="text-3xl font-black">-{deal.discountValue}%</p>
+                    <p className="text-3xl font-black">
+                      {deal.discountType === 'PERCENTAGE' ? `-${deal.discountValue}%` : `-€${deal.discountValue}`}
+                    </p>
                   </div>
                 </div>
                 <div className="relative z-10 mt-auto">
-                  <Button className="w-full bg-white text-secondary hover:bg-white/90 rounded-lg h-12 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
+                  <Button className="w-full bg-white text-primary hover:bg-white/90 rounded-lg h-12 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs" asChild>
                     <Link href={`/book?serviceId=${deal.id}`}>
                       <Calendar className="w-4 h-4" />
                       Book Now
@@ -174,4 +176,3 @@ export function Services() {
     </section>
   );
 }
-
