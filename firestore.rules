@@ -1,49 +1,176 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    /**
+     * CORE PHILOSOPHY
+     * This ruleset enforces a strict hybrid security model tailored for a barber shop ecosystem. 
+     * It combines direct ownership for personal customer profiles, shared access for 
+     * collaborative entities like appointments, and a role-based system (DBAC) for 
+     * administrative overrides and global catalog management.
+     *
+     * DATA STRUCTURE
+     * - /customers/{userId}: Private user profiles secured by UID.
+     * - /appointments/{appointmentId}: Shared documents containing customerId and barberId.
+     * - /barbers, /services, /galleryImages: Publicly readable catalogs for clients.
+     * - /roles_admin/{userId}: Existence-based collection for administrative privileges.
+     *
+     * KEY SECURITY DECISIONS
+     * - Denormalization for Authorization: Appointments store both customerId and barberId 
+     *   directly on the document to allow for high-performance, O(1) authorization checks 
+     *   without multiple document reads.
+     * - Structural Segregation: Public content (services, barber bios) is kept in top-level 
+     *   collections, while personal data is restricted to owner-only or shared-participant access.
+     * - Prototyping Flexibility: While authorization is strictly enforced based on the 
+     *   Authenticated Identity (request.auth.uid), the internal schema of documents remains 
+     *   flexible to allow for rapid iteration, validating only critical relational links.
+     */
+
+    // --- Global Helper Functions ---
+
+    /** Checks if the request is from an authenticated user. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    match /users/{userId} {
-      allow get, list: if isSignedIn() && request.auth.uid == userId;
-      allow create, update: if isSignedIn() && request.auth.uid == userId;
+    /** Checks if the authenticated user's UID matches the provided userId. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
+    /** Checks if the document exists and the current user is the owner. */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    /** Checks if the current user has an administrative record in the roles_admin collection. */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /** Appointment-specific participant checks using denormalized fields. */
+    function isAppointmentCustomer(data) {
+      return isSignedIn() && data.customerId == request.auth.uid;
+    }
+
+    function isAppointmentBarber(data) {
+      return isSignedIn() && data.barberId == request.auth.uid;
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for the admin roles collection. Access is restricted to the individual or other admins.
+     * @path /roles_admin/{adminId}
+     * @allow (get) If user is the admin in question or another admin.
+     * @deny (write) Any client-side modification; roles should be managed via console or backend.
+     * @principle Implements DBAC (Document-Based Access Control) for global roles.
+     */
+    match /roles_admin/{adminId} {
+      allow get: if isOwner(adminId) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Private profile data for customers.
+     * @path /customers/{customerId}
+     * @allow (create) If the customerId matches the auth UID (Self-creation).
+     * @deny (list) If the user is not an administrator.
+     * @principle Enforces path-based ownership and validates relational integrity on creation.
+     */
+    match /customers/{customerId} {
+      allow get: if isOwner(customerId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(customerId) && request.resource.data.id == customerId;
+      allow update: if isExistingOwner(customerId) && request.resource.data.id == resource.data.id;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Publicly readable barber profiles and their nested data.
+     * @path /barbers/{barberId}
+     * @allow (get, list) For any user.
+     * @deny (write) For non-admin users.
+     * @principle Public consumption with administrative management.
+     */
     match /barbers/{barberId} {
       allow get, list: if true;
-      allow write: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+
+      match /schedules/{scheduleId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAdmin();
+      }
+
+      match /portfolioImages/{imageId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAdmin();
+      }
     }
 
-    match /galleryImages/{imageId} {
+    /**
+     * @description Shared appointment documents.
+     * @path /appointments/{appointmentId}
+     * @allow (get) If the user is the customer, the barber, or an admin.
+     * @deny (create) If the customerId in the data does not match the requester's UID.
+     * @principle Uses shared access pattern with denormalized IDs for performant multi-party authorization.
+     */
+    match /appointments/{appointmentId} {
+      allow get: if isAppointmentCustomer(resource.data) || isAppointmentBarber(resource.data) || isAdmin();
+      allow list: if isAdmin(); // CRITICAL: Path-based or field-based list requires specific query filtering (P6).
+      allow create: if (isAppointmentCustomer(request.resource.data) && request.resource.data.id == appointmentId) || isAdmin();
+      allow update: if (resource != null && (isAppointmentCustomer(resource.data) || isAppointmentBarber(resource.data) || isAdmin())) && (request.resource.data.customerId == resource.data.customerId);
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Public service catalog definitions.
+     * @path /serviceCategories/{serviceCategoryId}
+     * @allow (get, list) For everyone.
+     * @deny (write) For non-admins.
+     * @principle Structural segregation of public read-only content.
+     */
+    match /serviceCategories/{serviceCategoryId} {
       allow get, list: if true;
-      allow write: if isSignedIn();
+      allow create, update, delete: if isAdmin();
     }
 
+    /**
+     * @description Public service details.
+     * @path /services/{serviceId}
+     * @allow (get, list) For everyone.
+     * @deny (write) For non-admins.
+     * @principle Structural segregation of public read-only content.
+     */
     match /services/{serviceId} {
       allow get, list: if true;
-      allow write: if isSignedIn();
+      allow create, update, delete: if isAdmin();
     }
 
-    match /deals/{dealId} {
+    /**
+     * @description General gallery images for salon ambiance.
+     * @path /galleryImages/{imageId}
+     * @allow (get, list) For everyone.
+     * @deny (write) For non-admins.
+     * @principle Public consumption with administrative management.
+     */
+    match /galleryImages/{imageId} {
       allow get, list: if true;
-      allow write: if isSignedIn();
+      allow create, update, delete: if isAdmin();
     }
 
-    match /subscriptions/{subscriptionId} {
+    /**
+     * @description AI-driven style recommendations.
+     * @path /styleRecommendations/{recommendationId}
+     * @allow (get, list) For everyone.
+     * @deny (write) For non-admins.
+     * @principle Public consumption with administrative management.
+     */
+    match /styleRecommendations/{recommendationId} {
       allow get, list: if true;
-      allow write: if isSignedIn();
+      allow create, update, delete: if isAdmin();
     }
 
-    match /appointments/{appointmentId} {
-      // Allow everyone to create and list. 
-      // Listing is required for the booking page to calculate available time slots.
-      allow create, list: if true;
-      
-      // Allow only signed-in administrators to manage or view details of specific appointments.
-      allow get, update, delete: if isSignedIn();
-    }
   }
 }
