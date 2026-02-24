@@ -111,16 +111,16 @@ service cloud.firestore {
      * @description Publicly readable promotional deals.
      */
     match /deals/{dealId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     /**
      * @description Publicly readable subscription tiers.
      */
     match /subscriptions/{subscriptionId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     /**

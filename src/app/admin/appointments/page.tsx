@@ -24,8 +24,7 @@ import {
   Plus,
   ChevronRight,
   ArrowLeft,
-  Sparkles,
-  MapPin
+  Sparkles
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, addMinutes, setHours, setMinutes, eachMinuteOfInterval, isBefore, addDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -140,7 +139,8 @@ export default function AppointmentsAdmin(props: { params: Promise<any>, searchP
     const interval = eachMinuteOfInterval({ start, end }, { step: 30 });
 
     return interval.filter(slot => {
-      if (isBefore(slot, new Date())) return false;
+      const now = new Date();
+      if (isBefore(slot, now)) return false;
       const slotEnd = addMinutes(slot, totalDuration || 30);
       const isOccupied = allAppointments?.some(app => {
         const appDate = (app.startTime as any).toDate();
