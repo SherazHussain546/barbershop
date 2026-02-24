@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, addDoc, serverTimestamp, query, orderBy, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,9 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-export default function ServicesManagement() {
+export default function ServicesManagement(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
   const { toast } = useToast();
   const firestore = useFirestore();
 

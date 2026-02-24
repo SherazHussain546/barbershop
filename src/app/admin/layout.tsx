@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, use } from 'react';
 import Link from 'next/link';
 import { 
   Scissors, 
@@ -20,7 +20,8 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout(props: { children: React.ReactNode, params: Promise<any> }) {
+  use(props.params);
   const auth = useAuth();
   const { user } = useUser();
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   if (!user) {
-    return <>{children}</>;
+    return <>{props.children}</>;
   }
 
   const navItems = [
@@ -138,7 +139,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        {children}
+        {props.children}
       </main>
 
       <style jsx global>{`

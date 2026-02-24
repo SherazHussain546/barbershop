@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, use, Suspense } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -19,10 +19,23 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useSearchParams } from 'next/navigation';
 
-export default function BookingPage() {
+function BookingContent() {
   const { toast } = useToast();
   const firestore = useFirestore();
   const searchParams = useSearchParams();
+
+  // Form State
+  const [step, setStep] = useState(1);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedBarber, setSelectedBarber] = useState<string>('any');
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookedAppointment, setBookedAppointment] = useState<any>(null);
 
   // Firestore Data
   const servicesQuery = useMemoFirebase(() => {
@@ -37,19 +50,6 @@ export default function BookingPage() {
 
   const { data: services } = useCollection(servicesQuery);
   const { data: barbers } = useCollection(barbersQuery);
-
-  // Form State
-  const [step, setStep] = useState(1);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [selectedBarber, setSelectedBarber] = useState<string>('any');
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookedAppointment, setBookedAppointment] = useState<any>(null);
 
   // Hydration safety
   useEffect(() => {
@@ -486,7 +486,7 @@ export default function BookingPage() {
                 </div>
                 <h2 className="text-4xl md:text-5xl font-headline font-black mb-4 uppercase tracking-tighter">You're <span className="text-primary italic">Enrolled</span>, {firstName}!</h2>
                 <p className="text-slate-500 text-lg mb-12 max-w-md mx-auto leading-relaxed">
-                  Your seat in the Guild is secured for <span className="text-slate-900 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">{format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{format(bookedAppointment.startTime, 'p')}</span>.
+                  Your seat in the Guild is secured for <span className="text-slate-900 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">{bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}</span> at <span className="text-slate-900 font-bold">{bookedAppointment && format(bookedAppointment.startTime, 'p')}</span>.
                 </p>
                 
                 <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl max-w-md mx-auto space-y-6 mb-12 text-left relative group">
@@ -521,7 +521,7 @@ export default function BookingPage() {
                     <Download className="w-5 h-5" /> Add to Calendar
                   </Button>
                   <Button variant="outline" className="h-16 border-2 border-slate-200 font-bold uppercase tracking-widest gap-3 rounded-2xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95" asChild>
-                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at 123 Gentleman's Row!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
+                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at 123 Gentleman's Row!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
                       <Mail className="w-5 h-5" /> Email Confirmation
                     </a>
                   </Button>
@@ -551,5 +551,15 @@ export default function BookingPage() {
         }
       `}</style>
     </main>
+  );
+}
+
+export default function BookingPage(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

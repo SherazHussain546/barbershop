@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, use } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc, updateDoc, Timestamp, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -46,7 +46,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function AppointmentsAdmin() {
+export default function AppointmentsAdmin(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
   const { toast } = useToast();
   const firestore = useFirestore();
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');

@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
@@ -8,7 +9,9 @@ import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Loader2, ImageIcon } from "lucide-react";
 
-export default function GalleryPage() {
+export default function GalleryPage(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
   const firestore = useFirestore();
 
   const galleryQuery = useMemoFirebase(() => {

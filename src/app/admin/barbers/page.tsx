@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, use } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, addDoc, serverTimestamp, query, orderBy, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-export default function BarberManagement() {
+export default function BarberManagement(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [instagramUrl, setInstagramUrl] = useState('');

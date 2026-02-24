@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Briefcase, Users, Calendar, TrendingUp, Scissors, Loader2, AlertCircle } from 'lucide-react';
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props: { params: Promise<any>, searchParams: Promise<any> }) {
+  use(props.params);
+  use(props.searchParams);
   const { user, isUserLoading } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
