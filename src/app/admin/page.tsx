@@ -151,22 +151,17 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         {[
-          { label: 'Total Appointments', value: stats.totalAppointments, icon: Calendar, color: 'bg-blue-500' },
-          { label: 'Active Artisans', value: stats.activeArtisans, icon: Users, color: 'bg-primary' },
-          { label: 'Revenue (YTD)', value: stats.revenueYTD, icon: TrendingUp, color: 'bg-emerald-500' },
-          { label: 'Service Types', value: stats.serviceTypes, icon: Briefcase, color: 'bg-amber-500' },
+          { label: 'Total Appointments', value: stats.totalAppointments },
+          { label: 'Active Artisans', value: stats.activeArtisans },
+          { label: 'Revenue (YTD)', value: stats.revenueYTD },
+          { label: 'Service Types', value: stats.serviceTypes },
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className={`p-3 rounded-2xl text-white ${stat.color}`}>
-                <stat.icon className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                <h3 className="text-2xl font-bold text-slate-900">
-                  {isLoadingStats ? <Loader2 className="w-4 h-4 animate-spin text-slate-200" /> : stat.value}
-                </h3>
-              </div>
+            <CardContent className="p-6">
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-2">
+                {isLoadingStats ? <Loader2 className="w-4 h-4 animate-spin text-slate-200" /> : stat.value}
+              </h3>
             </CardContent>
           </Card>
         ))}
