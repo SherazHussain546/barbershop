@@ -174,7 +174,7 @@ function BookingContent() {
       `DTEND:${end}`,
       `SUMMARY:Gentlecut Guild Appointment - ${serviceNames}`,
       `DESCRIPTION:Your appointment for ${serviceNames} at Gentlecut Guild.`,
-      'LOCATION:123 Gentleman\'s Row, Suite 101, New York, NY 10001',
+      'LOCATION:42 Grafton Street, Dublin 2, D02 V297, Ireland',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\n');
@@ -299,7 +299,7 @@ function BookingContent() {
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Phone Number</Label>
-                        <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="h-14 border-2 rounded-xl focus:ring-primary" />
+                        <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+353 1 000 0000" className="h-14 border-2 rounded-xl focus:ring-primary" />
                       </div>
                     </div>
                     
@@ -511,7 +511,7 @@ function BookingContent() {
                     <MapPin className="w-6 h-6 text-emerald-500 mt-1 shrink-0" />
                     <div>
                       <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Location</p>
-                      <p className="text-sm font-bold text-slate-900 leading-tight">123 Gentleman's Row, Suite 101<br />New York, NY 10001</p>
+                      <p className="text-sm font-bold text-slate-900 leading-tight">42 Grafton Street, Dublin 2<br />D02 V297, Ireland</p>
                     </div>
                   </div>
                 </div>
@@ -521,7 +521,7 @@ function BookingContent() {
                     <Download className="w-5 h-5" /> Add to Calendar
                   </Button>
                   <Button variant="outline" className="h-16 border-2 border-slate-200 font-bold uppercase tracking-widest gap-3 rounded-2xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95" asChild>
-                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at 123 Gentleman's Row!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
+                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at Grafton Street!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
                       <Mail className="w-5 h-5" /> Email Confirmation
                     </a>
                   </Button>

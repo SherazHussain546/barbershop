@@ -32,15 +32,15 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex gap-3 text-slate-400">
                 <MapPin className="w-5 h-5 text-secondary shrink-0" />
-                <span>123 Gentleman's Row, Suite 101<br />New York, NY 10001</span>
+                <span>42 Grafton Street, Dublin 2<br />D02 V297, Ireland</span>
               </li>
               <li className="flex gap-3 text-slate-400">
                 <Phone className="w-5 h-5 text-secondary shrink-0" />
-                <span>+1 (212) 555-0123</span>
+                <span>+353 1 677 1234</span>
               </li>
               <li className="flex gap-3 text-slate-400">
                 <Mail className="w-5 h-5 text-secondary shrink-0" />
-                <span>guild@gentlecut.com</span>
+                <span>guild@gentlecut.ie</span>
               </li>
             </ul>
           </div>
