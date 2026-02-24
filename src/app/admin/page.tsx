@@ -235,22 +235,22 @@ export default function AdminDashboard(props: { params: Promise<any>, searchPara
             <CardTitle className="text-xl font-headline font-bold">Quick Actions</CardTitle>
             <CardDescription>Common administrative tasks.</CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-3">
-            <Button className="w-full justify-start gap-3 h-12 bg-secondary hover:bg-secondary/90 text-white font-bold rounded-xl shadow-md shadow-secondary/20" asChild>
+          <CardContent className="p-6 space-y-4">
+            <Button className="w-full justify-start gap-3 h-14 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" asChild>
               <a href="/admin/appointments">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-5 h-5" />
                 Add Manual Appointment
               </a>
             </Button>
-            <Button variant="outline" className="w-full justify-start gap-3 h-12 border-2 hover:bg-slate-50 font-bold rounded-xl" asChild>
+            <Button className="w-full justify-start gap-3 h-14 bg-secondary hover:bg-secondary/90 text-white font-bold rounded-2xl shadow-lg shadow-secondary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" asChild>
               <a href="/admin/services">
-                <Briefcase className="w-4 h-4 text-primary" />
+                <Briefcase className="w-5 h-5" />
                 New Service Type
               </a>
             </Button>
-            <Button variant="outline" className="w-full justify-start gap-3 h-12 border-2 hover:bg-slate-50 font-bold rounded-xl" asChild>
+            <Button className="w-full justify-start gap-3 h-14 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl shadow-lg shadow-slate-900/20 transition-all hover:scale-[1.02] active:scale-[0.98]" asChild>
               <a href="/admin/barbers">
-                <Users className="w-4 h-4 text-secondary" />
+                <Users className="w-5 h-5" />
                 Manage Master Barbers
               </a>
             </Button>
