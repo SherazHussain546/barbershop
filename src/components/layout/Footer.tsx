@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Scissors, Instagram, Facebook, Twitter, MapPin, Phone, Mail, ShieldCheck } from "lucide-react";
+import { Scissors, Instagram, Facebook, Twitter, MapPin, Phone, Mail } from "lucide-react";
 
 export function Footer() {
   return (
@@ -79,10 +79,6 @@ export function Footer() {
         <div className="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
           <div className="flex items-center gap-4">
             <p>© 2024 Gentlecut Guild. All rights reserved.</p>
-            <Link href="/admin" className="flex items-center gap-1 hover:text-white transition-colors group">
-              <ShieldCheck className="w-3 h-3 group-hover:text-primary" />
-              Admin Portal
-            </Link>
           </div>
           <div className="flex gap-8">
             <Link href="#" className="hover:text-white">Privacy Policy</Link>
