@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin, ArrowLeft } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, User, Scissors, CheckCircle2, Download, Mail, Loader2, Sparkles, ChevronRight, MapPin, ArrowLeft, Tag, Crown } from 'lucide-react';
 import { format, addMinutes, startOfDay, endOfDay, isBefore, setHours, setMinutes, eachMinuteOfInterval, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -30,7 +30,7 @@ function BookingContent() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedBarber, setSelectedBarber] = useState<string>('any');
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -43,12 +43,24 @@ function BookingContent() {
     return query(collection(firestore, 'services'), orderBy('name', 'asc'));
   }, [firestore]);
 
+  const dealsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'deals'), orderBy('title', 'asc'));
+  }, [firestore]);
+
+  const subsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'subscriptions'), orderBy('name', 'asc'));
+  }, [firestore]);
+
   const barbersQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'barbers'), orderBy('name', 'asc'));
   }, [firestore]);
 
   const { data: services } = useCollection(servicesQuery);
+  const { data: deals } = useCollection(dealsQuery);
+  const { data: subscriptions } = useCollection(subsQuery);
   const { data: barbers } = useCollection(barbersQuery);
 
   // Hydration safety
@@ -58,16 +70,27 @@ function BookingContent() {
 
   // Deep Link Synchronization
   useEffect(() => {
-    const initialServiceId = searchParams.get('serviceId');
-    if (initialServiceId && !selectedServices.includes(initialServiceId)) {
-      setSelectedServices(prev => [...prev, initialServiceId]);
+    const initialItemId = searchParams.get('serviceId');
+    if (initialItemId && !selectedItems.includes(initialItemId)) {
+      setSelectedItems(prev => [...prev, initialItemId]);
     }
-  }, [searchParams]);
+  }, [searchParams, selectedItems]);
 
-  // Derived Values
-  const selectedServiceObjects = services?.filter(s => selectedServices.includes(s.id)) || [];
-  const totalDuration = selectedServiceObjects.reduce((acc, s) => acc + (s.durationMinutes || 0), 0);
-  const totalPrice = selectedServiceObjects.reduce((acc, s) => acc + (s.price || 0), 0);
+  // Derived Values - Consolidated Selection Logic
+  const allBookableItems = useMemo(() => {
+    const items = [];
+    if (services) items.push(...services.map(s => ({ ...s, type: 'SERVICE' as const })));
+    if (deals) items.push(...deals.map(d => ({ ...d, name: d.title, type: 'DEAL' as const, price: 0 }))); // Deals often imply customized pricing or discount, placeholder 0
+    if (subscriptions) items.push(...subscriptions.map(s => ({ ...s, type: 'SUBSCRIPTION' as const })));
+    return items;
+  }, [services, deals, subscriptions]);
+
+  const selectedItemObjects = useMemo(() => {
+    return allBookableItems.filter(item => selectedItems.includes(item.id));
+  }, [allBookableItems, selectedItems]);
+
+  const totalDuration = selectedItemObjects.reduce((acc, s) => acc + (s.durationMinutes || 30), 0);
+  const totalPrice = selectedItemObjects.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
   
   // Available Slots Logic
   const appointmentsQuery = useMemoFirebase(() => {
@@ -117,8 +140,8 @@ function BookingContent() {
     return options;
   }, []);
 
-  const handleToggleService = (id: string) => {
-    setSelectedServices(prev => 
+  const handleToggleItem = (id: string) => {
+    setSelectedItems(prev => 
       prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
     );
   };
@@ -135,7 +158,7 @@ function BookingContent() {
       lastName,
       email,
       phone,
-      serviceIds: selectedServices,
+      serviceIds: selectedItems,
       barberId: selectedBarber === 'any' ? null : selectedBarber,
       startTime: Timestamp.fromDate(startTime),
       endTime: Timestamp.fromDate(endTime),
@@ -164,7 +187,7 @@ function BookingContent() {
     if (!bookedAppointment) return;
     const start = format(bookedAppointment.startTime, "yyyyMMdd'T'HHmmss");
     const end = format(bookedAppointment.endTime, "yyyyMMdd'T'HHmmss");
-    const serviceNames = selectedServiceObjects.map(s => s.name).join(', ');
+    const itemNames = selectedItemObjects.map(s => s.name).join(', ');
     
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -172,8 +195,8 @@ function BookingContent() {
       'BEGIN:VEVENT',
       `DTSTART:${start}`,
       `DTEND:${end}`,
-      `SUMMARY:Gentlecut Guild Appointment - ${serviceNames}`,
-      `DESCRIPTION:Your appointment for ${serviceNames} at Gentlecut Guild.`,
+      `SUMMARY:Gentlecut Guild Appointment - ${itemNames}`,
+      `DESCRIPTION:Your appointment for ${itemNames} at Gentlecut Guild.`,
       'LOCATION:42 Grafton Street, Dublin 2, D02 V297, Ireland',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -218,49 +241,132 @@ function BookingContent() {
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <CardHeader className="bg-slate-900 text-white p-10 text-center relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <CardTitle className="text-3xl font-headline relative z-10">Select Your Services</CardTitle>
-                  <CardDescription className="text-slate-400 relative z-10">Choose one or more master grooming services from our menu.</CardDescription>
+                  <CardTitle className="text-3xl font-headline relative z-10">Select Your Experience</CardTitle>
+                  <CardDescription className="text-slate-400 relative z-10">Choose from our master services, promotional deals, or elite memberships.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-10">
-                  <div className="grid gap-4">
-                    {services?.map(service => (
-                      <div 
-                        key={service.id} 
-                        onClick={() => handleToggleService(service.id)}
-                        className={cn(
-                          "flex items-center justify-between p-6 rounded-2xl border-2 transition-all cursor-pointer group",
-                          selectedServices.includes(service.id) 
-                            ? "border-primary bg-primary/5 shadow-md" 
-                            : "border-slate-100 hover:border-slate-200 bg-white"
-                        )}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={cn(
-                            "w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors",
-                            selectedServices.includes(service.id) ? "bg-primary border-primary text-white" : "border-slate-200"
-                          )}>
-                            {selectedServices.includes(service.id) && <CheckCircle2 className="w-4 h-4" />}
-                          </div>
-                          <div>
-                            <p className="font-bold text-lg text-slate-900">{service.name}</p>
-                            <p className="text-sm text-slate-500 flex items-center gap-2">
-                              <Clock className="w-3.5 h-3.5 text-secondary" /> {service.durationMinutes} mins
-                            </p>
-                          </div>
+                  <div className="space-y-10">
+                    {/* Services Section */}
+                    {services && services.length > 0 && (
+                      <div className="space-y-4">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                          <Scissors className="w-4 h-4" /> Master Services
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {services.map(service => (
+                            <div 
+                              key={service.id} 
+                              onClick={() => handleToggleItem(service.id)}
+                              className={cn(
+                                "flex items-center justify-between p-6 rounded-2xl border-2 transition-all cursor-pointer group",
+                                selectedItems.includes(service.id) 
+                                  ? "border-primary bg-primary/5 shadow-md" 
+                                  : "border-slate-100 hover:border-slate-200 bg-white"
+                              )}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className={cn(
+                                  "w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors",
+                                  selectedItems.includes(service.id) ? "bg-primary border-primary text-white" : "border-slate-200"
+                                )}>
+                                  {selectedItems.includes(service.id) && <CheckCircle2 className="w-4 h-4" />}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg text-slate-900">{service.name}</p>
+                                  <p className="text-sm text-slate-500 flex items-center gap-2">
+                                    <Clock className="w-3.5 h-3.5 text-secondary" /> {service.durationMinutes} mins
+                                  </p>
+                                </div>
+                              </div>
+                              <p className="text-xl font-black text-primary">€{service.price}</p>
+                            </div>
+                          ))}
                         </div>
-                        <p className="text-xl font-black text-primary">€{service.price}</p>
                       </div>
-                    ))}
+                    )}
+
+                    {/* Deals Section */}
+                    {deals && deals.length > 0 && (
+                      <div className="space-y-4">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                          <Tag className="w-4 h-4" /> Promotional Deals
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {deals.map(deal => (
+                            <div 
+                              key={deal.id} 
+                              onClick={() => handleToggleItem(deal.id)}
+                              className={cn(
+                                "flex items-center justify-between p-6 rounded-2xl border-2 transition-all cursor-pointer group",
+                                selectedItems.includes(deal.id) 
+                                  ? "border-secondary bg-secondary/5 shadow-md" 
+                                  : "border-slate-100 hover:border-slate-200 bg-white"
+                              )}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className={cn(
+                                  "w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors",
+                                  selectedItems.includes(deal.id) ? "bg-secondary border-secondary text-white" : "border-slate-200"
+                                )}>
+                                  {selectedItems.includes(deal.id) && <CheckCircle2 className="w-4 h-4" />}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg text-slate-900">{deal.title}</p>
+                                  <p className="text-xs text-secondary font-bold uppercase tracking-wider">-{deal.discountValue}% Discount</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Subscriptions Section */}
+                    {subscriptions && subscriptions.length > 0 && (
+                      <div className="space-y-4">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                          <Crown className="w-4 h-4" /> Elite Memberships
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {subscriptions.map(sub => (
+                            <div 
+                              key={sub.id} 
+                              onClick={() => handleToggleItem(sub.id)}
+                              className={cn(
+                                "flex items-center justify-between p-6 rounded-2xl border-2 transition-all cursor-pointer group",
+                                selectedItems.includes(sub.id) 
+                                  ? "border-primary bg-primary/5 shadow-md" 
+                                  : "border-slate-100 hover:border-slate-200 bg-white"
+                              )}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className={cn(
+                                  "w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors",
+                                  selectedItems.includes(sub.id) ? "bg-primary border-primary text-white" : "border-slate-200"
+                                )}>
+                                  {selectedItems.includes(sub.id) && <CheckCircle2 className="w-4 h-4" />}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg text-slate-900">{sub.name}</p>
+                                  <p className="text-sm text-slate-500">Monthly Tier</p>
+                                </div>
+                              </div>
+                              <p className="text-xl font-black text-primary">€{sub.price}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="mt-10 p-8 bg-slate-900 rounded-[2rem] border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Selected Services ({selectedServices.length})</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Items Selected ({selectedItems.length})</p>
                       <p className="text-4xl font-black text-white">€{totalPrice}</p>
                     </div>
                     <div className="flex gap-4 w-full md:w-auto">
                        <Button 
-                        disabled={selectedServices.length === 0}
+                        disabled={selectedItems.length === 0}
                         onClick={() => setStep(2)}
                         className="flex-1 md:w-auto h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-sm shadow-xl shadow-primary/20 group"
                       >
@@ -496,8 +602,8 @@ function BookingContent() {
                   <div className="flex items-start gap-4 relative z-10">
                     <Scissors className="w-6 h-6 text-primary mt-1 shrink-0" />
                     <div>
-                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Grooming Services</p>
-                      <p className="text-lg font-bold text-slate-900">{selectedServiceObjects.map(s => s.name).join(', ')}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Grooming Experience</p>
+                      <p className="text-lg font-bold text-slate-900">{selectedItemObjects.map(s => s.name).join(', ')}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 relative z-10">
@@ -521,7 +627,7 @@ function BookingContent() {
                     <Download className="w-5 h-5" /> Add to Calendar
                   </Button>
                   <Button variant="outline" className="h-16 border-2 border-slate-200 font-bold uppercase tracking-widest gap-3 rounded-2xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95" asChild>
-                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedServiceObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at Grafton Street!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
+                    <a href={`mailto:${email}?subject=My Gentlecut Guild Appointment&body=Hello ${firstName},%0D%0A%0D%0AThis is a confirmation for your grooming appointment at Gentlecut Guild.%0D%0A%0D%0ADate: ${bookedAppointment && format(bookedAppointment.startTime, 'PPPP')}%0D%0ATime: ${bookedAppointment && format(bookedAppointment.startTime, 'p')}%0D%0AServices: ${selectedItemObjects.map(s => s.name).join(', ')}%0D%0A%0D%0AWe look forward to seeing you at Grafton Street!%0D%0A%0D%0ABest regards,%0D%0AThe Guild`}>
                       <Mail className="w-5 h-5" /> Email Confirmation
                     </a>
                   </Button>
@@ -555,8 +661,8 @@ function BookingContent() {
 }
 
 export default function BookingPage(props: { params: Promise<any>, searchParams: Promise<any> }) {
-  use(props.params);
-  use(props.searchParams);
+  const resolvedParams = use(props.params);
+  const resolvedSearchParams = use(props.searchParams);
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>}>
       <BookingContent />
